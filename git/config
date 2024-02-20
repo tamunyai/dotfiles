@@ -1,0 +1,45 @@
+[user]
+
+	name = AmonMunyai
+	email = 60216128+AmonMunyai@users.noreply.github.com
+
+[init]
+
+	defaultBranch = main
+
+[color]
+
+	ui = auto
+	diff = auto
+	status = auto
+	branch = auto
+
+[color "status"]
+
+	added = green
+	changed = blue
+	untracked = red
+
+[color "diff"]
+
+    meta = yellow
+    old = red 
+    new = green
+
+[commit]
+
+	template = ~/.gitmessage
+
+[core]
+
+	editor = nvim
+	excludesfile = ~/.gitignore-global
+
+[pull]
+
+	rebase = false
+
+[push]
+
+	followTags = true
+	default = current
