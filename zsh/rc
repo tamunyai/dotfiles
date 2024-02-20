@@ -1,0 +1,100 @@
+#!/usr/bin/env zsh
+#
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
+# --- FUNCTIONS ---------------------------------------------------------------
+
+source_if_exists() {
+  test -r "$1" && source "$1";
+}
+
+# --- SOURCE FILES ------------------------------------------------------------
+
+source_if_exists $HOME/.env.sh
+
+# -- PLUGINS
+
+# Array of user-plugin_name pairs
+plugins=(
+    "zsh-users/zsh-syntax-highlighting"
+    "zsh-users/zsh-autosuggestions"
+    "zsh-users/zsh-history-substring-search"
+)
+
+# Install and source plugins
+for plugin in "${plugins[@]}"; do
+    components=(${(s:/:)plugin})
+    github_user=$components[1]
+    plugin_name=$components[2]
+    install_dir="$ZSH/plugins/$plugin_name"
+    repo_url="https://github.com/$github_user/$plugin_name.git"    
+
+    if [ ! -d "$install_dir" ]; then
+        git clone "$repo_url" "$install_dir"
+    fi
+
+    source_if_exists "$install_dir/$plugin_name.plugin.zsh"
+done
+
+# -- THEME
+
+# Powerlevel10k
+p10k_repo="https://github.com/romkatv/powerlevel10k.git"
+p10k_dir="$ZSH/themes/powerlevel10k"
+
+# Install Powerlevel10k theme
+if [ ! -d "$p10k_dir" ]; then
+    git clone "$p10k_repo" "$p10k_dir"
+fi
+
+# Source Powerlevel10k theme
+source_if_exists "$p10k_dir/powerlevel10k.zsh-theme"
+source_if_exists "$ZSH/p10k.zsh"
+
+# --- EXPORTS -----------------------------------------------------------------
+
+export EDITOR='nvim'
+export VISUAL="$EDITOR"
+export PYTHONIOENCODING='UTF-8'
+export HISTSIZE='32768'
+export HISTFILESIZE="${HISTSIZE}"
+export HISTCONTROL='ignoreboth'
+export PATH="$PATH:${HOME}/bin:${HOME}/.local/bin"
+export LESS_TERMCAP_md="${yellow}"
+export MANPAGER='less -X'
+export BASH_SILENCE_DEPRECATION_WARNING=1
+export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+
+# --- SET OPTIONS -------------------------------------------------------------
+
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_FIND_NO_DUPS
+setopt INC_APPEND_HISTORY
+
+# --- ALIASES -----------------------------------------------------------------
+
+alias nv='nvim'
+alias mkdir='mkdir -pv'
+alias wget='wget -c'
+alias ve='python3 -m venv ./venv'
+alias va='source ./venv/bin/activate'
+
+if [ -x /usr/bin/dircolors ]; then
+  test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+  alias ls='command ls --color=auto'
+  alias l.='ls -d .* --color=auto'
+  alias grep='grep --color=auto'
+  alias fgrep='fgrep --color=auto'
+  alias egrep='egrep --color=auto'
+fi
+
+alias l='ls -CF'
+alias la='ls -A'
+alias ll='ls -alF'
+
+alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history 1 | sed "s/^[ ]*[0-9]\+[ ]*//")"'
