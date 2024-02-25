@@ -9,4 +9,4 @@ install_dependencies "git" "gcc" "g++" "python3-venv" "npm"
 
 # sudo add-apt-repository --yes ppa:neovim-ppa/unstable
 install "neovim"
-link_file "$src" "$HOME/.config/nvim"
+link_file "$src" "$HOME/.config/"
