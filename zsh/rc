@@ -4,13 +4,13 @@
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+    source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
 # --- FUNCTIONS ---------------------------------------------------------------
 
 source_if_exists() {
-  test -r "$1" && source "$1";
+    test -r "$1" && source "$1";
 }
 
 # --- SOURCE FILES ------------------------------------------------------------
@@ -32,7 +32,7 @@ for plugin in "${plugins[@]}"; do
     github_user=$components[1]
     plugin_name=$components[2]
     install_dir="$ZSH/plugins/$plugin_name"
-    repo_url="https://github.com/$github_user/$plugin_name.git"    
+    repo_url="https://github.com/$github_user/$plugin_name.git"
 
     if [ ! -d "$install_dir" ]; then
         git clone "$repo_url" "$install_dir"
@@ -40,21 +40,6 @@ for plugin in "${plugins[@]}"; do
 
     source_if_exists "$install_dir/$plugin_name.plugin.zsh"
 done
-
-# -- THEME
-
-# Powerlevel10k
-p10k_repo="https://github.com/romkatv/powerlevel10k.git"
-p10k_dir="$ZSH/themes/powerlevel10k"
-
-# Install Powerlevel10k theme
-if [ ! -d "$p10k_dir" ]; then
-    git clone "$p10k_repo" "$p10k_dir"
-fi
-
-# Source Powerlevel10k theme
-source_if_exists "$p10k_dir/powerlevel10k.zsh-theme"
-source_if_exists "$ZSH/p10k.zsh"
 
 # --- EXPORTS -----------------------------------------------------------------
 
@@ -78,19 +63,18 @@ setopt INC_APPEND_HISTORY
 
 # --- ALIASES -----------------------------------------------------------------
 
-alias nv='nvim'
 alias mkdir='mkdir -pv'
 alias wget='wget -c'
 alias ve='python3 -m venv ./venv'
 alias va='source ./venv/bin/activate'
 
 if [ -x /usr/bin/dircolors ]; then
-  test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-  alias ls='command ls --color=auto'
-  alias l.='ls -d .* --color=auto'
-  alias grep='grep --color=auto'
-  alias fgrep='fgrep --color=auto'
-  alias egrep='egrep --color=auto'
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    alias ls='command ls --color=auto'
+    alias l.='ls -d .* --color=auto'
+    alias grep='grep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias egrep='egrep --color=auto'
 fi
 
 alias l='ls -CF'
