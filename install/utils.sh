@@ -102,6 +102,7 @@ link_file() {
 	fi
 
 	if [ "$skip" != "true" ]; then # "false" or empty
+		mkdir -p "$2"
 		ln -s "$1" "$2"
 		success "linked $1 to $2"
 	fi
