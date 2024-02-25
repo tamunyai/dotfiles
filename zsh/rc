@@ -82,3 +82,7 @@ alias la='ls -A'
 alias ll='ls -alF'
 
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history 1 | sed "s/^[ ]*[0-9]\+[ ]*//")"'
+
+# --- STARSHIP ----------------------------------------------------------------
+
+eval "$(starship init zsh)"
