@@ -95,3 +95,35 @@ vim.api.nvim_create_autocmd({ "BufWritePre" }, {
 		vim.fn.mkdir(vim.fn.fnamemodify(file, ":p:h"), "p")
 	end,
 })
+
+-- Map the following keys after the language server attaches to the
+-- current buffer
+vim.api.nvim_create_autocmd("LspAttach", {
+	group = create_augroup("lsp"),
+	callback = function(ev)
+		-- Enable completion triggered by <c-x><c-o>
+		vim.bo[ev.buf].omnifunc = "v:lua.vim.lsp.omnifunc"
+
+		-- Buffer local mappings.
+		local map = vim.keymap.set
+		local opts = { buffer = ev.buf, silent = true }
+
+		opts.desc = "Show documentation for what is under cursor"
+		map("n", "K", vim.lsp.buf.hover, opts)
+
+		opts.desc = "Smart Rename"
+		map("n", "<leader>rn", vim.lsp.buf.rename, opts)
+
+		opts.desc = "Show Line Diagnostics"
+		map("n", "D", vim.diagnostic.open_float, opts)
+
+		opts.desc = "Previous Diagnostic"
+		map("n", "[d", vim.diagnostic.goto_prev, opts)
+
+		opts.desc = "Next Diagnostic"
+		map("n", "]d", vim.diagnostic.goto_next, opts)
+
+		opts.desc = "See available Code Actions"
+		map({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, opts)
+	end,
+})
