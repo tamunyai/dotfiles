@@ -1,5 +1,21 @@
 return {
 	{
+		"nvim-pack/nvim-spectre",
+		build = false,
+		cmd = "Spectre",
+		opts = { open_cmd = "noswapfile vnew" },
+		keys = {
+			{
+				"<leader>sr",
+				function()
+					require("spectre").open()
+				end,
+				desc = "Replace in Files (Spectre)",
+			},
+		},
+	},
+
+	{
 		"lewis6991/gitsigns.nvim",
 		event = { "BufReadPost", "BufWritePost", "BufNewFile" },
 		opts = {
