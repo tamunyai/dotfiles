@@ -82,28 +82,35 @@ local config = function()
 	end
 
 	local null_ls = require("null-ls")
+	local code_actions = null_ls.builtins.code_actions
+	local diagnostics = null_ls.builtins.diagnostics
+	local formatting = null_ls.builtins.formatting
+	local hover = null_ls.builtins.hover
+	local completion = null_ls.builtins.completion
 
 	null_ls.setup({
 		sources = {
 			-- bash, csh, ksh, sh, zsh
-			null_ls.builtins.formatting.beautysh,
+			formatting.beautysh,
 
 			-- lua, luau
-			null_ls.builtins.formatting.stylua,
+			formatting.stylua,
 
 			-- python
-			-- null_ls.builtins.diagnostics.pycodestyle,
-			null_ls.builtins.formatting.isort,
-			null_ls.builtins.formatting.black,
+			diagnostics.pycodestyle,
+			formatting.isort,
+			formatting.black.with({
+				extra_args = { "--line-length", "79" },
+			}),
 
 			-- c, cpp, cs, java, cuda, proto
-			-- null_ls.builtins.formatting.clang_format,
+			-- formatting.clang_format,
 
 			-- javascript, javascriptreact, typescript, typescriptreact
 			-- vue, css, scss, less, html, json, jsonc, yaml, markdown,
 			-- markdown.mdx, graphql, handlebars
-			null_ls.builtins.diagnostics.eslint_d,
-			null_ls.builtins.formatting.prettierd,
+			diagnostics.eslint_d,
+			formatting.prettierd,
 		},
 		on_attach = function(client, bufnr)
 			local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
