@@ -33,7 +33,7 @@
 [core]
 
 	editor = nvim
-	excludesfile = ~/.gitignore-global
+	excludesfile = ~/.gitignore
 
 [pull]
 
