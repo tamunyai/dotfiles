@@ -1,52 +1,46 @@
-<h1 align="center">Dotfiles Repository</h1>
+# Dotfiles
 
-<p align="center">
-  This repository contains my personal dotfiles, configuration files, and various utility scripts.
-</p>
+This repository contains my dotfiles for a consistent development setup.
+
+## Requirements
+
+Before installing, ensure you have the following:
+
+- **Git**.
+- [**GNU Stow**](https://www.gnu.org/software/stow/).
+
+You can install these using your package manager:
+
+- **Ubuntu/Debian**: `sudo apt-get install git stow`
+- **Fedora**: `sudo dnf install git stow`
+- **macOS**: `brew install git stow`
 
 ## Installation
 
-Clone this repository to your home directory and run the bootstrap script to set up the dotfiles:
+1. **Clone the Repository**
 
 ```bash
 git clone https://github.com/AmonMunyai/dotfiles.git ~/.dotfiles
+```
+
+2. **Navigate to the Directory**
+
+```bash
 cd ~/.dotfiles
-./install/bootstrap.sh
 ```
 
-### Individual Install Scripts
-
-Each directory may contain a `setup.sh` script. Install and setup specific configurations with:
+3. **Create Symlinks**
 
 ```bash
-./git/setup.sh
-./nvim/setup.sh
-./zsh/setup.sh
+stow .
 ```
 
-These commands install the associated package along with its configuration files (if available).
+This command will automatically symlink the configuration files from the `.dotfiles` directory to their appropriate locations in your home directory.
 
-## Usage
+## Customization
 
-### Local ZSH Configurations
-
-If there's customization you want ZSH to load on startup that is specific to this machine (stuff you don't want to commit into the repo), create `~/.env.sh` and put it in there. It will be loaded near the top of `.zshrc`.
-
-### Install Nerd Fonts
-
-In the `install-nerd-font.sh` script, you can customize the list of Nerd Fonts to download. Open the script in a text editor, and find the `fonts` array. You can comment out the fonts you don't want to download by adding a `#` at the beginning of the line. For example:
-
-```bash
-# List of Nerd Fonts to download
-fonts=(
-    "FiraCode"
-    # "Meslo"   # Commented out: This font won't be downloaded
-    "Hack"
-)
-```
-
-Simply uncomment or comment out the font names based on your preferences. Save the script and run it again to download the selected Nerd Fonts.
+If you need to customize any of the configurations, you can edit the files in the `.dotfiles` directory directly. After making changes, use `stow` again to apply the updates.
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This repository is licensed under the [MIT License](LICENSE).
