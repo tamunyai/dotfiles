@@ -21,7 +21,7 @@ You can install these using your package manager:
 1. **Stow the Dotfiles**
 
 ```bash
-git clone https://github.com/AmonMunyai/dotfiles.git ~/.dotfiles
+git clone https://github.com/tamunyai/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 stow .
 ```

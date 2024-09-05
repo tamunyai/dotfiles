@@ -20,7 +20,7 @@ You can install these using your package manager:
 1. **Clone the Repository**
 
 ```bash
-git clone https://github.com/AmonMunyai/dotfiles.git ~/.dotfiles
+git clone https://github.com/tamunyai/dotfiles.git ~/.dotfiles
 ```
 
 2. **Navigate to the Directory**
