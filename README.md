@@ -1,6 +1,6 @@
 # Dotfiles
 
-This repository contains my dotfiles for a consistent development setup.
+This repository contains my dotfiles for a consistent development setup across various environments.
 
 ## Requirements
 
@@ -23,13 +23,24 @@ You can install these using your package manager:
 git clone https://github.com/tamunyai/dotfiles.git ~/.dotfiles
 ```
 
-2. **Navigate to the Directory**
+2. **Run the Installation Script**
 
 ```bash
 cd ~/.dotfiles
+./install.sh
 ```
 
-3. **Create Symlinks**
+This script will:
+
+- Install necessary dependencies (like Zsh, fzf, Zoxide, Starship, Neovim, eza, etc.).
+- Change your default shell to Zsh if it's not already.
+- Install Node.js and npm via NVM (Node Version Manager).
+- Install Neovim and set up other development tools.
+- Symlink the configuration files from the `.dotfiles` directory to their appropriate locations using `stow`.
+
+3. **Create Symlinks Manually (Optional)**
+
+If you'd prefer to manually symlink the files without running the script:
 
 ```bash
 stow .

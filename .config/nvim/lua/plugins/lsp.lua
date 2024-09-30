@@ -1,191 +1,328 @@
-local servers = {
-	-- bash
-	bashls = {},
-
-	-- lua
-	lua_ls = {
-		settings = {
-			Lua = {
-				diagnostics = {
-					globals = { "vim" },
-				},
-				workspace = {
-					library = {
-						[vim.fn.expand("$VIMRUNTIME/lua")] = true,
-						[vim.fn.stdpath("config") .. "/lua"] = true,
-					},
-				},
-				telemetry = { enable = false },
-			},
-		},
-	},
-
-	-- c
-	clangd = {
-		capabilities = {
-			offsetEncoding = { "utf-16" },
-		},
-		cmd = {
-			"clangd",
-			"--background-index",
-			"--clang-tidy",
-			"--header-insertion=iwyu",
-			"--completion-style=detailed",
-			"--function-arg-placeholders",
-			"--fallback-style=llvm",
-		},
-		init_options = {
-			usePlaceholders = true,
-			completeUnimported = true,
-			clangdFileStatus = true,
-		},
-	},
-
-	-- python
-	pyright = {
-		settings = {
-			pyright = {
-				disableOrganizeImports = false,
-				analysis = {
-					useLibraryCodeForTypes = true,
-					autoSearchPaths = true,
-					diagnosticMode = "workspace",
-					autoImportCompletions = true,
-				},
-			},
-		},
-	},
+-- Mason ----------------------------------------------------------------------
+local Mason = {
+  "williamboman/mason.nvim",
+  build = ":MasonUpdate",
 }
 
-local config = function()
-	local lspconfig = require("lspconfig")
+Mason.keys = {
+  { "<leader>m", "<cmd>Mason<cr>", desc = "[M]ason" },
+}
 
-	local diagnostic_signs = {
-		Error = " ",
-		Warn = " ",
-		Hint = "󰠠 ",
-		Info = " ",
-	}
+Mason.tools = {
+  "stylua",
+  "shfmt",
+  "prettierd",
+  "black",
+  "isort",
+  "clang-format",
+  "shellcheck",
+  "beautysh",
+  "markuplint",
+  "stylelint",
+}
 
-	for type, icon in pairs(diagnostic_signs) do
-		local hl = "DiagnosticSign" .. type
-		vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
-	end
+Mason.opts = {
+  ui = {
+    icons = {
+      package_pending = " ",
+      package_installed = "󰄳 ",
+      package_uninstalled = "󰚌 ",
+    },
+  },
+  ensure_installed = Mason.tools,
+}
 
-	local cmp_nvim_lsp = require("cmp_nvim_lsp")
-	local capabilities = cmp_nvim_lsp.default_capabilities()
+Mason.config = function(_, opts)
+  require("mason").setup(opts)
 
-	for lsp, config in pairs(servers) do
-		lspconfig[lsp].setup(vim.tbl_deep_extend("force", {
-			capabilities = capabilities,
-		}, config))
-	end
+  local mr = require("mason-registry")
+  mr:on("package:install:success", function()
+    vim.defer_fn(function()
+      -- trigger FileType event to possibly load this newly installed LSP server
+      require("lazy.core.handler.event").trigger({
+        event = "FileType",
+        buf = vim.api.nvim_get_current_buf(),
+      })
+    end, 100)
+  end)
 
-	local null_ls = require("null-ls")
-	local code_actions = null_ls.builtins.code_actions
-	local diagnostics = null_ls.builtins.diagnostics
-	local formatting = null_ls.builtins.formatting
-	local hover = null_ls.builtins.hover
-	local completion = null_ls.builtins.completion
-
-	null_ls.setup({
-		sources = {
-			-- bash, csh, ksh, sh, zsh
-			formatting.beautysh,
-
-			-- lua, luau
-			formatting.stylua,
-
-			-- python
-			diagnostics.pycodestyle,
-			formatting.isort,
-			formatting.black.with({
-				extra_args = { "--line-length", "79" },
-			}),
-
-			-- c, cpp, cs, java, cuda, proto
-			-- formatting.clang_format,
-
-			-- javascript, javascriptreact, typescript, typescriptreact
-			-- vue, css, scss, less, html, json, jsonc, yaml, markdown,
-			-- markdown.mdx, graphql, handlebars
-			diagnostics.eslint_d,
-			formatting.prettierd,
-		},
-		on_attach = function(client, bufnr)
-			local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
-
-			if client.supports_method("textDocument/formatting") then
-				vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
-				vim.api.nvim_create_autocmd("BufWritePre", {
-					group = augroup,
-					buffer = bufnr,
-					callback = function()
-						vim.lsp.buf.format({ bufnr = bufnr })
-					end,
-				})
-			end
-		end,
-	})
+  mr.refresh(function()
+    for _, tool in ipairs(opts.ensure_installed) do
+      local package = mr.get_package(tool)
+      if not package:is_installed() then
+        package:install()
+      end
+    end
+  end)
 end
 
-return {
-	{
-		"neovim/nvim-lspconfig",
-		lazy = false,
-		dependencies = {
-			"williamboman/mason.nvim",
-			"hrsh7th/cmp-nvim-lsp",
-			"nvimtools/none-ls.nvim",
-			"nvim-lua/plenary.nvim",
-		},
-		config = config,
-	},
-
-	{
-		"williamboman/mason.nvim",
-		build = ":MasonUpdate",
-		cmd = { "Mason", "MasonInstall", "MasonUpdate" },
-		dependencies = {
-			"williamboman/mason-lspconfig.nvim",
-			"WhoIsSethDaniel/mason-tool-installer.nvim",
-		},
-		keys = {
-			{ "<leader>m", "<cmd>Mason<cr>", desc = "Mason" },
-		},
-		opts = function()
-			local mason = require("mason")
-			local mason_lspconfig = require("mason-lspconfig")
-			local mason_tool_installer = require("mason-tool-installer")
-
-			mason.setup({
-				ui = {
-					icons = {
-						package_pending = " ",
-						package_installed = "󰄳 ",
-						package_uninstalled = " 󰚌",
-					},
-				},
-			})
-
-			mason_lspconfig.setup({
-				ensure_installed = vim.tbl_keys(servers),
-				automatic_installation = true,
-			})
-
-			mason_tool_installer.setup({
-				ensure_installed = {
-					"stylua",
-					"shfmt",
-					"isort",
-					"black",
-					"shellcheck",
-					"beautysh",
-					-- "prettierd",
-					-- "eslint_d",
-					-- "clang-format",
-				},
-			})
-		end,
-	},
+-- MasonLspConfig  ------------------------------------------------------------
+local MasonLspConfig = {
+  "williamboman/mason-lspconfig.nvim",
 }
+
+MasonLspConfig.servers = {
+
+  cssls = {},
+
+  css_variables = {},
+
+  bashls = {},
+
+  lua_ls = {
+    single_file_support = true,
+    settings = {
+      Lua = {
+        diagnostics = {
+          globals = { "vim" },
+        },
+        workspace = {
+          checkThirdParty = false,
+          library = {
+            [vim.fn.expand("$VIMRUNTIME/lua")] = true,
+            [vim.fn.stdpath("config") .. "/lua"] = true,
+          },
+        },
+        hint = {
+          enable = true,
+          setType = false,
+          paramType = true,
+          paramName = "Disable",
+          semicolon = "Disable",
+          arrayIndex = "Disable",
+        },
+        telemetry = { enable = false },
+      },
+    },
+  },
+
+  ts_ls = {
+    root_dir = function(...)
+      return require("lspconfig.util").root_pattern("package.json")(...)
+    end,
+
+    preferences = {
+      disableSuggestions = true,
+    },
+
+    single_file_support = false,
+    settings = {
+      typescript = {
+        inlayHints = {
+          includeInlayParameterNameHints = "literal",
+          includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+          includeInlayFunctionParameterTypeHints = true,
+          includeInlayVariableTypeHints = false,
+          includeInlayPropertyDeclarationTypeHints = true,
+          includeInlayFunctionLikeReturnTypeHints = true,
+          includeInlayEnumMemberValueHints = true,
+        },
+      },
+      javascript = {
+        inlayHints = {
+          includeInlayParameterNameHints = "all",
+          includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+          includeInlayFunctionParameterTypeHints = true,
+          includeInlayVariableTypeHints = true,
+          includeInlayPropertyDeclarationTypeHints = true,
+          includeInlayFunctionLikeReturnTypeHints = true,
+          includeInlayEnumMemberValueHints = true,
+        },
+      },
+    },
+  },
+
+  clangd = {
+    capabilities = {
+      offsetEncoding = { "utf-16" },
+    },
+    cmd = {
+      "clangd",
+      "--background-index",
+      "--clang-tidy",
+      "--header-insertion=iwyu",
+      "--completion-style=detailed",
+      "--function-arg-placeholders",
+      "--fallback-style=llvm",
+    },
+    init_options = {
+      usePlaceholders = true,
+      completeUnimported = true,
+      clangdFileStatus = true,
+    },
+  },
+
+  pyright = {
+    settings = {
+      pyright = {
+        disableOrganizeImports = false,
+        analysis = {
+          useLibraryCodeForTypes = true,
+          autoSearchPaths = true,
+          diagnosticMode = "workspace",
+          autoImportCompletions = true,
+        },
+      },
+    },
+  },
+}
+
+MasonLspConfig.opts = {
+  ensure_installed = vim.tbl_keys(MasonLspConfig.servers),
+  automatic_installations = true,
+}
+
+MasonLspConfig.config = function(_, opts)
+  require("mason-lspconfig").setup(opts)
+end
+
+-- NvimLspConfig --------------------------------------------------------------
+local NvimLspConfig = {
+  "neovim/nvim-lspconfig",
+}
+
+NvimLspConfig.opts = {
+  diagnostics = {
+    signs = {
+      text = {
+        [vim.diagnostic.severity.ERROR] = " ",
+        [vim.diagnostic.severity.WARN] = " ",
+        [vim.diagnostic.severity.HINT] = "󰠠 ",
+        [vim.diagnostic.severity.INFO] = " ",
+      },
+    },
+  },
+
+  capabilities = {
+    workspace = {
+      fileOperations = {
+        didRename = true,
+        willRename = true,
+      },
+    },
+
+    textDocument = {
+      completion = {
+        completionItem = {
+          documentationFormat = { "markdown", "plaintext" },
+          snippetSupport = true,
+          preselectSupport = true,
+          insertReplaceSupport = true,
+          labelDetailsSupport = true,
+          deprecatedSupport = true,
+          commitCharactersSupport = true,
+          tagSupport = { valueSet = { 1 } },
+          resolveSupport = {
+            properties = {
+              "documentation",
+              "detail",
+              "additionalTextEdits",
+            },
+          },
+        },
+      },
+    },
+  },
+
+  automatic_installation = true,
+}
+
+NvimLspConfig.config = function(_, opts)
+  local capabilities =
+    vim.tbl_deep_extend("force", vim.lsp.protocol.make_client_capabilities(), opts and opts.capabilities or {})
+
+  vim.diagnostic.config(opts.diagnostics)
+
+  for lsp, config in pairs(MasonLspConfig.servers) do
+    require("lspconfig")[lsp].setup(vim.tbl_deep_extend("force", {
+      capabilities = capabilities,
+    }, config))
+  end
+
+  local map = vim.keymap.set
+  map("n", "K", vim.lsp.buf.hover, { desc = "Hover" })
+  map("n", "D", vim.diagnostic.open_float, { desc = "Line [D]iagnostics" })
+  map("n", "gd", vim.lsp.buf.definition, { desc = "[G]oto [D]efinition" })
+  map("n", "<leader>rn", vim.lsp.buf.rename, { desc = "[R]e[n]ame" })
+  map({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, { desc = "[C]ode [A]ction" })
+end
+
+-- NoneLs ---------------------------------------------------------------------
+local NoneLS = {
+  "nvimtools/none-ls.nvim",
+}
+
+NoneLS.config = function()
+  local nls = require("null-ls")
+
+  nls.setup({
+    sources = {
+      -- Formatting
+      nls.builtins.formatting.stylua,
+      nls.builtins.formatting.shfmt,
+      nls.builtins.formatting.prettierd,
+      nls.builtins.formatting.black,
+      nls.builtins.formatting.isort,
+      nls.builtins.formatting.clang_format,
+      nls.builtins.formatting.stylelint,
+
+      -- Diagnostics
+      nls.builtins.diagnostics.markuplint,
+      -- nls.builtins.diagnostics.stylelint,
+
+      -- Code Actions
+      -- nls.builtins.code_actions.refactoring,
+    },
+
+    -- Auto-format and Organize imports on save
+    on_attach = function(client, bufnr)
+      local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
+
+      if client.supports_method("textDocument/formatting") then
+        vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
+        vim.api.nvim_create_autocmd("BufWritePre", {
+          group = augroup,
+          buffer = bufnr,
+          callback = function()
+            -- Organize imports if it's a TypeScript or JavaScript file
+            if vim.bo.filetype == "typescript" or vim.bo.filetype == "javascript" then
+              vim.lsp.buf.execute_command({
+                command = "_typescript.organizeImports",
+                arguments = { vim.api.nvim_buf_get_name(0) },
+                title = "",
+              })
+            end
+
+            -- Format the file before saving
+            vim.lsp.buf.format({ bufnr = bufnr })
+          end,
+        })
+      end
+    end,
+
+    root_dir = require("null-ls.utils").root_pattern(
+      ".neoconf.json", -- Neovim configuration marker
+      "Makefile", -- Makefile used in many build systems
+      ".git", -- Git repository marker
+      "node_modules", -- Node.js project root
+      "pyproject.toml", -- Python (PEP 518) configuration file
+      "setup.py", -- Python project root for older setups
+      "setup.cfg", -- Python setup configuration
+      "Pipfile", -- Python Pipenv project root
+      "poetry.lock", -- Poetry project root (Python)
+      "Cargo.toml", -- Rust project root (Cargo package manager)
+      "go.mod", -- Go module file (Go projects)
+      "package.json", -- JavaScript/TypeScript project root (npm/yarn)
+      "tsconfig.json", -- TypeScript configuration file
+      ".eslintrc", -- ESLint configuration (JS/TS linting)
+      "CMakeLists.txt", -- CMake project root (C/C++ projects)
+      ".gcloudignore", -- Google Cloud specific marker
+      "build.gradle", -- Gradle build file (Java projects)
+      "pom.xml" -- Maven build file (Java projects)
+    ),
+  })
+
+  vim.keymap.set("n", "<leader>gf", vim.lsp.buf.format, { desc = "[G]lobal [F]ormat" })
+end
+
+return { Mason, MasonLspConfig, NvimLspConfig, NoneLS }

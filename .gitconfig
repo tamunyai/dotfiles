@@ -22,9 +22,9 @@
 
 [color "diff"]
 
-    meta = yellow
-    old = red 
-    new = green
+  meta = yellow
+  old = red 
+  new = green
 
 [commit]
 
