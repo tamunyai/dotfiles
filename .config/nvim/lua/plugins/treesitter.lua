@@ -15,6 +15,7 @@ Treesitter.dependencies = {
 
 Treesitter.opts = {
   auto_install = true,
+  ignore_install = { "gitcommit" },
   highlight = {
     enable = true,
     use_languagetree = true,
