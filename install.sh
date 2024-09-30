@@ -1,7 +1,6 @@
 #!/bin/bash
 
-# Root directory for dotfiles
-DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+sudo -v
 
 # --- FUNCTIONS ---------------------------------------------------------------
 
@@ -163,9 +162,21 @@ install "neovim"
 
 # --- STOW AND DOTFILES SETUP -------------------------------------------------
 
+# Root directory for dotfiles
+DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Change to the dotfiles parent directory
+cd "$DOTFILES/.."
+
 # Install GNU Stow and link dotfiles
 install "stow"
-stow "$DOTFILES" || fail "Stow failed to link dotfiles."
+
+# Check if PACKAGE_NAME is not a subdirectory of HOME
+if [[ ! -d "$HOME/$PACKAGE_NAME" ]]; then
+	stow "$PACKAGE_NAME" --target "$HOME" || echo "Stow failed to link dotfiles."
+else
+	stow "$PACKAGE_NAME" || echo "Stow failed to link dotfiles."
+fi
 
 # Final success message
 success "Setup complete!"
