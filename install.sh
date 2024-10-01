@@ -120,7 +120,7 @@ fi
 install "curl"
 
 if ! command_exists "starship"; then
-	curl -sS https://starship.rs/install.sh | sh || fail "Starship installation failed."
+	curl -sS https://starship.rs/install.sh | sh -s --y || fail "Starship installation failed."
 fi
 
 # --- NVM, NODE, AND NPM INSTALLATION -----------------------------------------
