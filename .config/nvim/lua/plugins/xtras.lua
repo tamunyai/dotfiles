@@ -1,25 +1,3 @@
--- RenderMarkdown -------------------------------------------------------------
-local RenderMarkdown = {
-  "MeanderingProgrammer/render-markdown.nvim",
-}
-
-RenderMarkdown.dependencies = {
-  {
-    "nvim-treesitter/nvim-treesitter",
-    opts = function(_, opts)
-      table.insert(opts.ensure_installed or {}, {
-        "markdown",
-        "markdown_inline",
-      })
-    end,
-  },
-  "nvim-tree/nvim-web-devicons",
-}
-
-RenderMarkdown.config = function(_, opts)
-  require("render-markdown").setup(opts)
-end
-
 -- MiniAnimate  ---------------------------------------------------------------
 local MiniAnimate = {
   "echasnovski/mini.animate",
@@ -57,4 +35,4 @@ MiniAnimate.opts = function()
   }
 end
 
-return { RenderMarkdown, MiniAnimate }
+return { MiniAnimate }
