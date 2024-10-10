@@ -117,6 +117,8 @@ local Telescope = {
   cmd = "Telescope",
 }
 
+Telescope.event = { "BufEnter" }
+
 Telescope.dependencies = {
   "nvim-telescope/telescope-ui-select.nvim",
 }
