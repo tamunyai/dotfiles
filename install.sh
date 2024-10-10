@@ -55,23 +55,23 @@ function install() {
 	else
 		info "installing ${package}.."
 
-		if [ -x "$(command -v apt-get)" ]; then
+		if command_exists apt-get; then
 			sudo apt-get install -y "$package"
 
-		elif [ -x "$(command -v yum)" ]; then
-			sudo yum install -y "$package"
+		elif command_exists yum || command_exists dnf; then
+			sudo "${BASH_REMATCH[0]}" install -y "$package" # Handles both yum and dnf
 
-		elif [ -x "$(command -v pacman)" ]; then
+		elif command_exists pacman; then
 			sudo pacman -S --noconfirm "$package"
 
-		elif [ -x "$(command -v zypper)" ]; then
+		elif command_exists zypper; then
 			sudo zypper install -y "$package"
 
-		elif [ -x "$(command -v brew)" ]; then
+		elif command_exists brew; then
 			brew install "$package"
 
 		else
-			user "unsupported package manager. please install $package manually."
+			fail "Unsupported package manager. Please install $package manually."
 		fi
 	fi
 }
@@ -79,10 +79,10 @@ function install() {
 # installs a list of package dependencies
 # usage: install_dependencies <package_list>
 function install_dependencies() {
-	local package_list=("$@") # Get the list of packages passed as arguments
+	local packages=("$@")
 
-	for package in "${package_list[@]}"; do
-		! command_exists "$package" && install "$package"
+	for package in "${packages[@]}"; do
+		install "$package"
 	done
 }
 
@@ -166,7 +166,7 @@ install "neovim"
 DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Change to the dotfiles parent directory
-cd "$DOTFILES/.."
+cd "$DOTFILES/.." || exit
 
 # Stow the package, assuming the package name is the last directory in DOTFILES
 PACKAGE_NAME="$(basename "$DOTFILES")"
