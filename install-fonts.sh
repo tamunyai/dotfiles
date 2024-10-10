@@ -91,25 +91,26 @@ function install_dependencies() {
 # detects the operating system and sets relevant environment variables
 # usage: detect_os
 detect_os() {
-	local os
-	os="$(uname)"
+	local os_name
+	os_name="$(uname -s)"
 
-	if [ "$os" == "Linux" ]; then
+	case "$os_name" in
+	Linux*)
 		if [ -n "$WSL_DISTRO_NAME" ]; then
 			WINDOWS_HOME="$(wslpath "$(cmd.exe /C 'echo %USERPROFILE%' 2>/dev/null | tr -d '\r')")"
-
 			export DEST_FONTS_DIR="$WINDOWS_HOME/Downloads"
 
 		else
 			export DEST_FONTS_DIR="$HOME/.local/share/fonts"
-
-			# elif [ "$os" == "Darwin" ]; then
-			# 	export DEST_FONTS_DIR="$HOME/Library/Fonts"
 		fi
-
-	else
-		fail "unable to detect the operating system."
-	fi
+		;;
+	Darwin*)
+		export DEST_FONTS_DIR="$HOME/Library/Fonts"
+		;;
+	*)
+		fail "Unable to detect the operating system."
+		;;
+	esac
 }
 
 # --- MAIN --------------------------------------------------------------------
