@@ -56,6 +56,9 @@ export HISTFILE="$HOME/.zsh_history"     # Location of the history file
 # Paths.
 export PATH="$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH"
 
+# Update FPATH to include completions
+export FPATH="$HOME/.eza/completions/zsh:$FPATH"
+
 # Prevent screen clearing after quitting a manual page.
 export MANPAGER='less -X'
 
@@ -66,23 +69,48 @@ export BASH_SILENCE_DEPRECATION_WARNING=1
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 export LESS_TERMCAP_md="${yellow}"
 
+# --- ANDROID SDK SETUP -------------------------------------------------------
+os_name="$(uname -s)"
+
+case "$os_name" in
+Linux*)
+  if [ -n "$WSL_DISTRO_NAME" ]; then
+    WINDOWS_HOME="$(wslpath "$(cmd.exe /C 'echo %USERPROFILE%' 2>/dev/null | tr -d '\r')")"
+    export ANDROID_HOME="$WINDOWS_HOME/AppData/Local/Android/Sdk"
+    alias adb="$ANDROID_HOME/platform-tools/adb.exe"
+    ln -sf "$ANDROID_HOME/platform-tools/adb.exe" "$ANDROID_HOME/platform-tools/adb" # For expo-cli
+
+  else
+    export ANDROID_HOME="$HOME/Android/Sdk"
+  fi
+  ;;
+Darwin*)
+  export ANDROID_HOME="$HOME/Library/Android/sdk"
+  ;;
+*)
+  echo "Unsupported OS. Please set ANDROID_HOME manually."
+  ;;
+esac
+
+export PATH="$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools:$PATH"
+
 # --- HISTORY OPTIONS ---------------------------------------------------------
-setopt appendhistory               # Append to the history file, don't overwrite it.
-setopt inc_append_history          # Save commands immediately after they're entered.
-setopt hist_expire_dups_first       # Expire duplicates first when trimming history
-setopt extended_history             # Save timestamp and command duration in history
-setopt share_history                # Share history between all Zsh sessions
-setopt hist_ignore_space           # Ignore commands that start with a space.
-setopt hist_ignore_all_dups        # Remove all duplicate commands from history.
-setopt hist_save_no_dups           # Don't save duplicate entries in history.
-setopt hist_ignore_dups            # Don't record a command if it's a duplicate.
-setopt hist_find_no_dups           # Don't display duplicates when searching.
-setopt hist_reduce_blanks           # Remove superfluous blanks before saving history
+setopt appendhistory                 # Append to the history file, don't overwrite it.
+setopt inc_append_history            # Save commands immediately after they're entered.
+setopt hist_expire_dups_first        # Expire duplicates first when trimming history
+setopt extended_history              # Save timestamp and command duration in history
+setopt share_history                 # Share history between all Zsh sessions
+setopt hist_ignore_space             # Ignore commands that start with a space.
+setopt hist_ignore_all_dups          # Remove all duplicate commands from history.
+setopt hist_save_no_dups             # Don't save duplicate entries in history.
+setopt hist_ignore_dups              # Don't record a command if it's a duplicate.
+setopt hist_find_no_dups             # Don't display duplicates when searching.
+setopt hist_reduce_blanks            # Remove superfluous blanks before saving history
 
 # --- KEYBINDINGS -------------------------------------------------------------
-bindkey -e # Use Emacs-style key bindings
+bindkey -e                           # Use Emacs-style key bindings
 bindkey '^p' history-search-backward # Bind Ctrl+P for backward search through history
-bindkey '^n' history-search-forward # Bind Ctrl+N for forward search through history
+bindkey '^n' history-search-forward  # Bind Ctrl+N for forward search through history
 
 # --- COMPLETION SETTINGS -----------------------------------------------------
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
@@ -94,7 +122,7 @@ zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 # --- ALIASES -----------------------------------------------------------------
 # Useful aliases
 alias vi='nvim'
-alias l="eza -alh"
+alias l="eza -alh --icons"
 alias ls=eza
 alias sl=eza
 alias tree="eza --tree -I 'node_modules|.git|.expo' -L 1"
@@ -110,9 +138,9 @@ alias mkdir='mkdir -pv'
 
 # Prevent accidental deletion or renaming of system-critical files
 alias rm='rm -I --preserve-root'
-alias mv='mv -i'                                # Prompt before overwriting files with mv
-alias cp='cp -i'                                # Prompt before overwriting files with cp
-alias ln='ln -i'                                # Prompt before creating symlinks
+alias mv='mv -i'                     # Prompt before overwriting files with mv
+alias cp='cp -i'                     # Prompt before overwriting files with cp
+alias ln='ln -i'                     # Prompt before creating symlinks
 
 # Download files with continuation support
 alias wget='wget -c'
@@ -131,9 +159,7 @@ alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo
 
 # --- STARSHIP & ZOXIDE INIT --------------------------------------------------
 eval "$(starship init zsh)"
-eval "$(zoxide init --cmd cd zsh)" # (smart `cd` replacement) for faster navigation
+eval "$(zoxide init --cmd cd zsh)"   # (smart `cd` replacement) for faster navigation
 
 # --- CLEANUP -----------------------------------------------------------------
 unset source_if_exists
-
-export FPATH="$HOME/.eza/completions/zsh:$FPATH"
