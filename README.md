@@ -38,7 +38,21 @@ This script will:
 - Install Neovim and set up other development tools.
 - Symlink the configuration files from the `.dotfiles` directory to their appropriate locations using `stow`.
 
-3. **Create Symlinks Manually (Optional)**
+3. **Install Fonts for Better Rendering (Optional)**
+
+To install fonts (like JetBrains Mono) for better rendering in your terminal:
+
+```bash
+cd ~/.dotfiles
+./install-fonts.sh
+```
+
+This script will:
+
+- Detect your operating system and set the correct font directory.
+- Download and install Nerd Fonts (e.g., JetBrains Mono).
+
+4. **Create Symlinks Manually (Optional)**
 
 If you'd prefer to manually symlink the files without running the script:
 
