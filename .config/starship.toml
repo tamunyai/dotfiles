@@ -33,11 +33,11 @@ format = '[$path]($style)[$read_only]($read_only_style) '
 symbol = ' '
 
 [git_status]
-staged = '[ $count](green)'
-deleted = '[ $count](red)'
-untracked = '[ $count](yellow)'
-modified = '[ $count](blue)'  
-renamed = '[ $count](purple)'  
+staged = '[ $count ](green)'
+deleted = '[ $count ](red)'
+untracked = '[ $count ](yellow)'
+modified = '[ $count ](blue)'  
+renamed = '[ $count ](purple)'  
 format = '$all_status$ahead_behind'  # Display all statuses
 
 # Fill element (space)
