@@ -5,7 +5,7 @@ function source_if_exists() {
     [[ -r "$1" ]] && source "$1";
 }
 
-# --- PLUGINS SETUP -------------------------------------------
+# --- PLUGINS SETUP -----------------------------------------------------------
 # Set the directory for Zinit and plugins.
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 

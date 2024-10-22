@@ -11,7 +11,7 @@ function info() {
 }
 
 # display user prompts or queries
-# usage: user <question>
+# usage: user <message>
 function user() {
 	printf "\r  [ \033[0;33m??\033[0m ] %s\n" "$1"
 }
@@ -27,7 +27,7 @@ function success() {
 function fail() {
 	printf "\r\033[2K  [\033[0;31mFAIL\033[0m] %s\n" "$1"
 	echo ''
-	exit
+	exit 1
 }
 
 # checks if a command is available in the system.
@@ -58,8 +58,11 @@ function install() {
 		if command_exists apt-get; then
 			sudo apt-get install -y "$package"
 
-		elif command_exists yum || command_exists dnf; then
-			sudo "${BASH_REMATCH[0]}" install -y "$package" # Handles both yum and dnf
+		elif command_exists yum; then
+			sudo yum install -y "$package"
+
+		elif command_exists dnf; then
+			sudo dnf install -y "$package"
 
 		elif command_exists pacman; then
 			sudo pacman -S --noconfirm "$package"
@@ -76,28 +79,35 @@ function install() {
 	fi
 }
 
-# installs a list of package dependencies
-# usage: install_dependencies <package_list>
-function install_dependencies() {
-	local packages=("$@")
+# --- INSTALLATION & CONFIGURATION --------------------------------------------
 
-	for package in "${packages[@]}"; do
-		install "$package"
-	done
-}
+# Array of packages to install
+packages=(
+	"zsh"
+	"fzf"
+	"curl"
+	"git"
+	"gcc"
+	"g++"
+	"python3-venv"
+	"unzip"
+	"xclip"
+	"ripgrep"
+	"neovim" # sudo add-apt-repository --yes ppa:neovim-ppa/unstable
+	"stow"
+)
 
-# --- ZSH INSTALLATION & CONFIGURATION ----------------------------------------
+# Install packages in the array
+for package in "${packages[@]}"; do
+	install "$package"
+done
 
-# Install Zsh and set it as the default shell if necessary
-install "zsh"
-
+# Change default shell to Zsh if necessary
 if [ "$SHELL" != "$(which zsh)" ]; then
 	sudo chsh -s "$(which zsh)" "$USER" || fail "Failed to change default shell to zsh."
 fi
 
-# Install fzf and zoxide (a smarter cd command)
-install "fzf"
-
+# Install zoxide
 if ! command_exists "zoxide"; then
 	curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh || fail "Zoxide installation failed."
 fi
@@ -105,7 +115,7 @@ fi
 # Install `eza`, an improved version of `ls`
 if ! command_exists "eza"; then
 	info "Installing eza (modern ls alternative)..."
-	wget -c https://github.com/eza-community/eza/releases/latest/download/eza_x86_64-unknown-linux-gnu.tar.gz -O - | tar xz || fail "Failed to download eza."
+	wget -c https://github.com/eza-community/eza/releases/latest/download/eza_x86_64-unknown-linux-gnu.tar.gz -O - | tar -xz || fail "Failed to download eza."
 	sudo chmod +x eza || fail "Failed to make eza executable."
 	sudo chown root:root eza || fail "Failed to set ownership for eza."
 	sudo mv eza /usr/local/bin/eza || fail "Failed to move eza to /usr/local/bin."
@@ -114,67 +124,40 @@ else
 	success "eza already installed."
 fi
 
-# --- STARSHIP INSTALLATION ---------------------------------------------------
-
-# Ensure curl is installed and install Starship prompt
-install "curl"
-
+# Install Starship prompt
 if ! command_exists "starship"; then
-	curl -sS https://starship.rs/install.sh | sh -s --y || fail "Starship installation failed."
+	curl -sS https://starship.rs/install.sh | sh || fail "Starship installation failed."
 fi
 
-# --- NVM, NODE, AND NPM INSTALLATION -----------------------------------------
-
-# Install NVM (Node Version Manager) if not already installed
+# Install NVM, Node.js, and npm
 if ! command_exists "nvm"; then
 	info "Installing NVM (Node Version Manager)..."
 	curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.4/install.sh | bash || fail "NVM installation failed."
-
-	# Load NVM immediately in this session
 	export NVM_DIR="$HOME/.nvm"
 	[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-else
-	success "NVM already installed."
 fi
 
-# Install Node.js and npm via nvm
 if ! command_exists "npm"; then
 	info "Installing Node.js and npm via NVM..."
 	nvm install node || fail "Failed to install Node.js"
 	nvm use node || fail "Failed to switch to Node.js"
-
-	# Install global npm packages
-	npm install --global @types/react || fail "Failed to install npm packages."
 	success "npm installed via NVM."
 else
 	success "npm already installed."
 fi
 
-# --- NVIM INSTALLATION -------------------------------------------------------
-
-# Install required dependencies for Neovim
-install_dependencies "git" "gcc" "g++" "python3-venv" "unzip" "xclip"
-
-# Add Neovim PPA and install Neovim
-sudo add-apt-repository --yes ppa:neovim-ppa/unstable
-sudo apt-get update -y
-install "neovim"
-
-# --- STOW AND DOTFILES SETUP -------------------------------------------------
+# --- DOTFILES SETUP ----------------------------------------------------------
 
 # Root directory for dotfiles
 DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Change to the dotfiles parent directory
-cd "$DOTFILES/.." || exit
+cd "$DOTFILES/.." || exit 1
 
 # Stow the package, assuming the package name is the last directory in DOTFILES
 PACKAGE_NAME="$(basename "$DOTFILES")"
 
-# Install GNU Stow and link dotfiles
-install "stow"
-
-# Check if PACKAGE_NAME is not a subdirectory of HOME
+# Link dotfiles with GNU Stow
 if [[ ! -d "$HOME/$PACKAGE_NAME" ]]; then
 	stow "$PACKAGE_NAME" --target "$HOME" || fail "Stow failed to link dotfiles."
 else
