@@ -81,6 +81,8 @@ function install() {
 
 # --- INSTALLATION & CONFIGURATION --------------------------------------------
 
+sudo apt update -y
+
 # Array of packages to install
 packages=(
 	"zsh"
@@ -95,6 +97,8 @@ packages=(
 	"ripgrep"
 	"neovim" # sudo add-apt-repository --yes ppa:neovim-ppa/unstable
 	"stow"
+	# "openjdk-17-jdk"
+	# "openjdk-17-jre"
 )
 
 # Install packages in the array
@@ -124,11 +128,6 @@ else
 	success "eza already installed."
 fi
 
-# Install Starship prompt
-if ! command_exists "starship"; then
-	curl -sS https://starship.rs/install.sh | sh || fail "Starship installation failed."
-fi
-
 # Install NVM, Node.js, and npm
 if ! command_exists "nvm"; then
 	info "Installing NVM (Node Version Manager)..."
@@ -139,29 +138,11 @@ fi
 
 if ! command_exists "npm"; then
 	info "Installing Node.js and npm via NVM..."
-	nvm install node || fail "Failed to install Node.js"
-	nvm use node || fail "Failed to switch to Node.js"
+	nvm install --lts || fail "Failed to install Node.js"
+	nvm use --lts || fail "Failed to switch to Node.js"
 	success "npm installed via NVM."
 else
 	success "npm already installed."
-fi
-
-# --- DOTFILES SETUP ----------------------------------------------------------
-
-# Root directory for dotfiles
-DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-# Change to the dotfiles parent directory
-cd "$DOTFILES/.." || exit 1
-
-# Stow the package, assuming the package name is the last directory in DOTFILES
-PACKAGE_NAME="$(basename "$DOTFILES")"
-
-# Link dotfiles with GNU Stow
-if [[ ! -d "$HOME/$PACKAGE_NAME" ]]; then
-	stow "$PACKAGE_NAME" --target "$HOME" || fail "Stow failed to link dotfiles."
-else
-	stow "$PACKAGE_NAME" || fail "Stow failed to link dotfiles."
 fi
 
 # Final success message
