@@ -32,7 +32,7 @@ cd ~/.dotfiles
 
 This script will:
 
-- Install necessary dependencies (like `zsh`, `fzf`, `zoxide`, `starship`, `neovim`, `eza`, etc.).
+- Install necessary dependencies (like `zsh`, `fzf`, `zoxide`, `neovim`, `eza`, etc.).
 - Change your default shell to `zsh` if it's not already.
 - Install `nodejs` and `npm` via `nvm` (Node Version Manager).
 - Install `neovim` and set up other development tools.
