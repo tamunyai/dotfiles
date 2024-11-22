@@ -1,46 +1,39 @@
 #!/usr/bin/env zsh
 
 # --- FUNCTIONS ---------------------------------------------------------------
+
 function source_if_exists() {
     [[ -r "$1" ]] && source "$1";
 }
 
 # --- PLUGINS SETUP -----------------------------------------------------------
-# Set the directory for Zinit and plugins.
-ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
-# Install Zinit if it's not already installed.
-if [ ! -d "$ZINIT_HOME" ]; then
-   git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
-fi
+# Array of user-plugin_name pairs
+plugins=(
+    "zsh-users/zsh-syntax-highlighting"
+    "zsh-users/zsh-autosuggestions"
+    "zsh-users/zsh-history-substring-search"
+    "MichaelAquilina/zsh-you-should-use"
+    "Aloxaf/fzf-tab"
+)
 
-# Load Zinit.
-source_if_exists "${ZINIT_HOME}/zinit.zsh"
+# Install and source plugins
+for plugin in "${plugins[@]}"; do
+    components=(${(s:/:)plugin})
+    github_user=$components[1]
+    plugin_name=$components[2]
+    install_dir="$HOME/.zsh/plugins/$plugin_name"
+    repo_url="https://github.com/$github_user/$plugin_name.git"
 
-# Install and load plugins with Zinit.
-zinit light zsh-users/zsh-syntax-highlighting         # Syntax highlighting
-zinit light zsh-users/zsh-autosuggestions             # Autosuggestions
-zinit light zsh-users/zsh-completions                 # Additional completions
-zinit light zsh-users/zsh-history-substring-search    # History substring search
-zinit light Aloxaf/fzf-tab                            # fzf-tab
-zinit light MichaelAquilina/zsh-you-should-use
+    if [ ! -d "$install_dir" ]; then
+        git clone "$repo_url" "$install_dir"
+    fi
 
-# Add snippets.
-zinit snippet OMZP::git                               # Git plugin
-zinit snippet OMZP::sudo                              # Sudo plugin
-
-# Load completions.
-autoload -Uz compinit && compinit
-
-# Replay directory change history quietly.
-zinit cdreplay -q
-
-# --- NVM SETUP ---------------------------------------------------------------
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+    source_if_exists "$install_dir/$plugin_name.plugin.zsh"
+done
 
 # --- ENVIRONMENT VARIABLES ---------------------------------------------------
+
 # Set default editors.
 export EDITOR='nvim'
 export VISUAL="$EDITOR"
@@ -69,7 +62,12 @@ export BASH_SILENCE_DEPRECATION_WARNING=1
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 export LESS_TERMCAP_md="${yellow}"
 
-# --- ANDROID SDK SETUP -------------------------------------------------------
+# NVM setup
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# Android Sdk
 os_name="$(uname -s)"
 
 case "$os_name" in
@@ -78,7 +76,7 @@ Linux*)
     WINDOWS_HOME="$(wslpath "$(cmd.exe /C 'echo %USERPROFILE%' 2>/dev/null | tr -d '\r')")"
     export ANDROID_HOME="$WINDOWS_HOME/AppData/Local/Android/Sdk"
     alias adb="$ANDROID_HOME/platform-tools/adb.exe"
-    ln -sf "$ANDROID_HOME/platform-tools/adb.exe" "$ANDROID_HOME/platform-tools/adb" # For expo-cli
+    # ln -sf "$ANDROID_HOME/platform-tools/adb.exe" "$ANDROID_HOME/platform-tools/adb" # For expo-cli
 
   else
     export ANDROID_HOME="$HOME/Android/Sdk"
@@ -95,6 +93,7 @@ esac
 export PATH="$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools:$PATH"
 
 # --- HISTORY OPTIONS ---------------------------------------------------------
+
 setopt appendhistory                 # Append to the history file, don't overwrite it.
 setopt inc_append_history            # Save commands immediately after they're entered.
 setopt hist_expire_dups_first        # Expire duplicates first when trimming history
@@ -108,20 +107,14 @@ setopt hist_find_no_dups             # Don't display duplicates when searching.
 setopt hist_reduce_blanks            # Remove superfluous blanks before saving history
 
 # --- KEYBINDINGS -------------------------------------------------------------
+
 bindkey -e                           # Use Emacs-style key bindings
 bindkey '^p' history-search-backward # Bind Ctrl+P for backward search through history
 bindkey '^n' history-search-forward  # Bind Ctrl+N for forward search through history
 
-# --- COMPLETION SETTINGS -----------------------------------------------------
-zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
-zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
-zstyle ':completion:*' menu no
-zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
-zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
-
 # --- ALIASES -----------------------------------------------------------------
+
 # Useful aliases
-alias vi='nvim'
 alias l="eza -alh --icons"
 alias ls=eza
 alias sl=eza
@@ -157,9 +150,10 @@ alias va='source ./venv/bin/activate'
 # Notification after command completion
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history 1 | sed "s/^[ ]*[0-9]\+[ ]*//")"'
 
-# --- STARSHIP & ZOXIDE INIT --------------------------------------------------
-eval "$(starship init zsh)"
-eval "$(zoxide init --cmd cd zsh)"   # (smart `cd` replacement) for faster navigation
+# --- ZOXIDE INIT -------------------------------------------------------------
+
+# (smart `cd` replacement) for faster navigation
+eval "$(zoxide init --cmd cd zsh)"
 
 # --- CLEANUP -----------------------------------------------------------------
 unset source_if_exists
