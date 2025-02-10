@@ -13,7 +13,7 @@ function info() {
 }
 
 # display user prompts or queries
-# usage: user <question>
+# usage: user <message>
 function user() {
 	printf "\r  [ \033[0;33m??\033[0m ] %s\n" "$1"
 }

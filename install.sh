@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+#
+# sets up configurations for my preferred development environment.
 
 sudo -v
 
@@ -147,3 +149,4 @@ fi
 
 # Final success message
 success "Setup complete!"
+echo ''
