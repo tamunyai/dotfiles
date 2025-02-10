@@ -1,7 +1,7 @@
 [user]
 
-	name = AmonMunyai
-	email = 60216128+AmonMunyai@users.noreply.github.com
+	name = tamunyai 
+	email = 60216128+tamunyai@users.noreply.github.com
 
 [init]
 
@@ -33,7 +33,7 @@
 [core]
 
 	editor = nvim
-	excludesfile = ~/.gitignore-global
+	excludesfile = ~/.git-global-ignore
 
 [pull]
 
