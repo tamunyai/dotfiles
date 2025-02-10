@@ -1,19 +1,19 @@
--- Treesitter -----------------------------------------------------------------
-local Treesitter = {
+-- nvim-treesitter ------------------------------------------------------------
+local nvim_treesitter = {
   "nvim-treesitter/nvim-treesitter",
   build = ":TSUpdate",
 }
 
-Treesitter.event = { "BufReadPost", "BufWritePost", "BufNewFile" }
+nvim_treesitter.event = { "BufReadPost", "BufWritePost", "BufNewFile" }
 
-Treesitter.dependencies = {
+nvim_treesitter.dependencies = {
   {
     "windwp/nvim-ts-autotag", -- Automatically add closing tags for HTML and JSX
     opts = {},
   },
 }
 
-Treesitter.opts = {
+nvim_treesitter.opts = {
   auto_install = true,
   ignore_install = { "gitcommit" },
   highlight = {
@@ -23,8 +23,8 @@ Treesitter.opts = {
   indent = { enable = true },
 }
 
-Treesitter.config = function(_, opts)
+nvim_treesitter.config = function(_, opts)
   require("nvim-treesitter.configs").setup(opts)
 end
 
-return Treesitter
+return nvim_treesitter

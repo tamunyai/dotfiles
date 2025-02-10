@@ -1,10 +1,10 @@
--- MiniAnimate  ---------------------------------------------------------------
-local MiniAnimate = {
+-- mini.animate  --------------------------------------------------------------
+local mini_animate = {
   "echasnovski/mini.animate",
   event = "VeryLazy",
 }
 
-MiniAnimate.opts = function()
+mini_animate.opts = function()
   -- don't use animate when scrolling with the mouse
   local mouse_scrolled = false
   for _, scroll in ipairs({ "Up", "Down" }) do
@@ -35,4 +35,4 @@ MiniAnimate.opts = function()
   }
 end
 
-return { MiniAnimate }
+return { mini_animate }

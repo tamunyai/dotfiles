@@ -1,10 +1,10 @@
--- NvimCmp --------------------------------------------------------------------
-local NvimCmp = {
+-- nvim-cmp -------------------------------------------------------------------
+local nvim_cmp = {
   "hrsh7th/nvim-cmp",
   event = "InsertEnter",
 }
 
-NvimCmp.dependencies = {
+nvim_cmp.dependencies = {
   {
     -- snippet plugin
     "L3MON4D3/LuaSnip",
@@ -51,7 +51,7 @@ NvimCmp.dependencies = {
   "onsails/lspkind.nvim",
 }
 
-NvimCmp.opts = {
+nvim_cmp.opts = {
   completion = {
     completeopt = "menu,menuone",
   },
@@ -82,14 +82,14 @@ NvimCmp.opts = {
 
   sources = {
     { name = "nvim_lsp", keyword_length = 3 },
-    { name = "luasnip", keyword_length = 2 },
-    { name = "buffer", keyword_length = 3 },
+    { name = "luasnip",  keyword_length = 2 },
+    { name = "buffer",   keyword_length = 3 },
     { name = "nvim_lua" },
     { name = "path" },
   },
 }
 
-NvimCmp.config = function(_, opts)
+nvim_cmp.config = function(_, opts)
   local cmp = require("cmp")
 
   for _, source in ipairs(opts.sources) do
@@ -171,4 +171,4 @@ NvimCmp.config = function(_, opts)
   })
 end
 
-return NvimCmp
+return nvim_cmp

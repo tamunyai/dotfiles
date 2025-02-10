@@ -1,20 +1,20 @@
--- OneDark --------------------------------------------------------------------
-local OneDark = {
+-- onedark.nvim ---------------------------------------------------------------
+local onedark = {
   "navarasu/onedark.nvim",
   lazy = false,
   priority = 1000,
 }
 
-OneDark.opts = {
+onedark.opts = {
   style = "darker",
   transparent = true,
   lualine = { transparent = true },
   diagnostics = { darker = true, undercurl = true },
 }
 
-OneDark.config = function(_, opts)
+onedark.config = function(_, opts)
   require("onedark").setup(opts)
   vim.cmd.colorscheme("onedark")
 end
 
-return OneDark
+return onedark

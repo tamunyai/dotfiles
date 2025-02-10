@@ -1,14 +1,14 @@
--- LuaLine --------------------------------------------------------------------
-local LuaLine = {
+-- lualine.nvim ---------------------------------------------------------------
+local lualine = {
   "nvim-lualine/lualine.nvim",
   event = "VeryLazy",
 }
 
-LuaLine.dependencies = {
+lualine.dependencies = {
   "nvim-tree/nvim-web-devicons",
 }
 
-LuaLine.init = function()
+lualine.init = function()
   vim.g.lualine_laststatus = vim.o.laststatus
   if vim.fn.argc(-1) > 0 then
     -- set an empty statusline till lualine loads
@@ -19,7 +19,7 @@ LuaLine.init = function()
   end
 end
 
-LuaLine.opts = function()
+lualine.opts = function()
   vim.o.laststatus = vim.g.lualine_laststatus
 
   return {
@@ -88,13 +88,13 @@ LuaLine.opts = function()
   }
 end
 
--- IndentBlankline ------------------------------------------------------------
-local IndentBlankline = {
+-- indent.blankline.nvim ------------------------------------------------------
+local indent_blankline = {
   "lukas-reineke/indent-blankline.nvim",
   main = "ibl",
 }
 
-IndentBlankline.exclude_filetypes = {
+indent_blankline.exclude_filetypes = {
   "help",
   "alpha",
   "dashboard",
@@ -112,39 +112,39 @@ IndentBlankline.exclude_filetypes = {
   "TelescopeResults",
 }
 
-IndentBlankline.opts = {
+indent_blankline.opts = {
   indent = {
     char = "│",
     tab_char = "│",
   },
   scope = { enabled = false },
-  exclude = { filetypes = IndentBlankline.exclude_filetypes },
+  exclude = { filetypes = indent_blankline.exclude_filetypes },
 }
 
--- MiniIndentScope ------------------------------------------------------------
-local MiniIndentScope = {
+-- mini.indentscope -----------------------------------------------------------
+local mini_indentscope = {
   "echasnovski/mini.indentscope",
   version = false,
 }
 
-MiniIndentScope.event = {
+mini_indentscope.event = {
   "BufReadPost",
   "BufWritePost",
   "BufNewFile",
 }
 
-MiniIndentScope.opts = {
+mini_indentscope.opts = {
   symbol = "│",
   options = { try_as_border = true },
 }
 
-MiniIndentScope.init = function()
+mini_indentscope.init = function()
   vim.api.nvim_create_autocmd("FileType", {
-    pattern = IndentBlankline.exclude_filetypes,
+    pattern = indent_blankline.exclude_filetypes,
     callback = function()
       vim.b.miniindentscope_disable = true
     end,
   })
 end
 
-return { LuaLine, IndentBlankline, MiniIndentScope }
+return { lualine, indent_blankline, mini_indentscope }

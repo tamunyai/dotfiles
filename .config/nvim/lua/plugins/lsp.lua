@@ -1,14 +1,14 @@
--- Mason ----------------------------------------------------------------------
-local Mason = {
+-- mason.nvim -----------------------------------------------------------------
+local mason = {
   "williamboman/mason.nvim",
   build = ":MasonUpdate",
 }
 
-Mason.keys = {
+mason.keys = {
   { "<leader>m", "<cmd>Mason<cr>", desc = "[M]ason" },
 }
 
-Mason.tools = {
+mason.tools = {
   "stylua",
   "shfmt",
   "prettierd",
@@ -21,7 +21,7 @@ Mason.tools = {
   "stylelint",
 }
 
-Mason.opts = {
+mason.opts = {
   ui = {
     icons = {
       package_pending = " ",
@@ -29,10 +29,10 @@ Mason.opts = {
       package_uninstalled = "󰚌 ",
     },
   },
-  ensure_installed = Mason.tools,
+  ensure_installed = mason.tools,
 }
 
-Mason.config = function(_, opts)
+mason.config = function(_, opts)
   require("mason").setup(opts)
 
   local mr = require("mason-registry")
@@ -56,12 +56,12 @@ Mason.config = function(_, opts)
   end)
 end
 
--- MasonLspConfig  ------------------------------------------------------------
-local MasonLspConfig = {
+-- mason-lspconfig.nvim -------------------------------------------------------
+local mason_lspconfig = {
   "williamboman/mason-lspconfig.nvim",
 }
 
-MasonLspConfig.servers = {
+mason_lspconfig.servers = {
 
   cssls = {},
 
@@ -167,21 +167,21 @@ MasonLspConfig.servers = {
   },
 }
 
-MasonLspConfig.opts = {
-  ensure_installed = vim.tbl_keys(MasonLspConfig.servers),
+mason_lspconfig.opts = {
+  ensure_installed = vim.tbl_keys(mason_lspconfig.servers),
   automatic_installations = true,
 }
 
-MasonLspConfig.config = function(_, opts)
+mason_lspconfig.config = function(_, opts)
   require("mason-lspconfig").setup(opts)
 end
 
--- NvimLspConfig --------------------------------------------------------------
-local NvimLspConfig = {
+-- nvim-lspconfig -------------------------------------------------------------
+local nvim_lspconfig = {
   "neovim/nvim-lspconfig",
 }
 
-NvimLspConfig.opts = {
+nvim_lspconfig.opts = {
   diagnostics = {
     signs = {
       text = {
@@ -227,13 +227,13 @@ NvimLspConfig.opts = {
   automatic_installation = true,
 }
 
-NvimLspConfig.config = function(_, opts)
+nvim_lspconfig.config = function(_, opts)
   local capabilities =
-    vim.tbl_deep_extend("force", vim.lsp.protocol.make_client_capabilities(), opts and opts.capabilities or {})
+      vim.tbl_deep_extend("force", vim.lsp.protocol.make_client_capabilities(), opts and opts.capabilities or {})
 
   vim.diagnostic.config(opts.diagnostics)
 
-  for lsp, config in pairs(MasonLspConfig.servers) do
+  for lsp, config in pairs(mason_lspconfig.servers) do
     require("lspconfig")[lsp].setup(vim.tbl_deep_extend("force", {
       capabilities = capabilities,
     }, config))
@@ -247,12 +247,12 @@ NvimLspConfig.config = function(_, opts)
   map({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, { desc = "[C]ode [A]ction" })
 end
 
--- NoneLs ---------------------------------------------------------------------
-local NoneLS = {
+-- none-ls.nvim ---------------------------------------------------------------
+local none_ls = {
   "nvimtools/none-ls.nvim",
 }
 
-NoneLS.config = function()
+none_ls.config = function()
   local nls = require("null-ls")
 
   nls.setup({
@@ -301,28 +301,28 @@ NoneLS.config = function()
     end,
 
     root_dir = require("null-ls.utils").root_pattern(
-      ".neoconf.json", -- Neovim configuration marker
-      "Makefile", -- Makefile used in many build systems
-      ".git", -- Git repository marker
-      "node_modules", -- Node.js project root
+      ".neoconf.json",  -- Neovim configuration marker
+      "Makefile",       -- Makefile used in many build systems
+      ".git",           -- Git repository marker
+      "node_modules",   -- Node.js project root
       "pyproject.toml", -- Python (PEP 518) configuration file
-      "setup.py", -- Python project root for older setups
-      "setup.cfg", -- Python setup configuration
-      "Pipfile", -- Python Pipenv project root
-      "poetry.lock", -- Poetry project root (Python)
-      "Cargo.toml", -- Rust project root (Cargo package manager)
-      "go.mod", -- Go module file (Go projects)
-      "package.json", -- JavaScript/TypeScript project root (npm/yarn)
-      "tsconfig.json", -- TypeScript configuration file
-      ".eslintrc", -- ESLint configuration (JS/TS linting)
+      "setup.py",       -- Python project root for older setups
+      "setup.cfg",      -- Python setup configuration
+      "Pipfile",        -- Python Pipenv project root
+      "poetry.lock",    -- Poetry project root (Python)
+      "Cargo.toml",     -- Rust project root (Cargo package manager)
+      "go.mod",         -- Go module file (Go projects)
+      "package.json",   -- JavaScript/TypeScript project root (npm/yarn)
+      "tsconfig.json",  -- TypeScript configuration file
+      ".eslintrc",      -- ESLint configuration (JS/TS linting)
       "CMakeLists.txt", -- CMake project root (C/C++ projects)
-      ".gcloudignore", -- Google Cloud specific marker
-      "build.gradle", -- Gradle build file (Java projects)
-      "pom.xml" -- Maven build file (Java projects)
+      ".gcloudignore",  -- Google Cloud specific marker
+      "build.gradle",   -- Gradle build file (Java projects)
+      "pom.xml"         -- Maven build file (Java projects)
     ),
   })
 
   vim.keymap.set("n", "<leader>gf", vim.lsp.buf.format, { desc = "[G]lobal [F]ormat" })
 end
 
-return { Mason, MasonLspConfig, NvimLspConfig, NoneLS }
+return { mason, mason_lspconfig, nvim_lspconfig, none_ls }
