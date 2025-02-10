@@ -1,5 +1,8 @@
 local map = vim.keymap.set
 
+-- Paste without overwriting the unnamed register
+map("v", "p", '"_dP', { desc = "[P]aste without overwriting unnamed register" })
+
 -- Escape clears search highlight in insert and normal modes
 map({ "i", "n" }, "<esc>", "<cmd>noh<cr><esc>", { desc = "Escape and Clear search highlight" })
 
@@ -21,8 +24,8 @@ map("v", "<A-k>", ":m '<-2<cr>gv=gv", { desc = "Move Up" })
 -- Buffer navigation
 map("n", "<S-h>", "<cmd>bprevious<cr>", { desc = "Prev Buffer" })
 map("n", "<S-l>", "<cmd>bnext<cr>", { desc = "Next Buffer" })
-map("n", "[b", "<cmd>bprevious<cr>", { desc = "Prev Buffer" })
-map("n", "]b", "<cmd>bnext<cr>", { desc = "Next Buffer" })
+map("n", "[b", "<cmd>bprevious<cr>", { desc = "Prev [B]uffer" })
+map("n", "]b", "<cmd>bnext<cr>", { desc = "Next [B]uffer" })
 map("n", "<leader>`", "<cmd>e #<cr>", { desc = "Switch to Other Buffer" })
 
 -- Search result navigation
@@ -38,7 +41,7 @@ map("n", "<leader>/", "gcc", { desc = "Toggle Comment", remap = true })
 map("v", "<leader>/", "gc", { desc = "Toggle Comment", remap = true })
 
 -- Lazy
-map("n", "<leader>l", "<cmd>Lazy<cr>", { desc = "Lazy" })
+map("n", "<leader>l", "<cmd>Lazy<cr>", { desc = "[L]azy" })
 
 -- Quit all
 map("n", "<leader>qq", "<cmd>qa<cr>", { desc = "[Q]uit All" })
@@ -48,6 +51,8 @@ map("n", "<leader>ef", function()
   local file_name = vim.api.nvim_buf_get_name(0)
   local file_type = vim.bo.filetype
   local file_base_name = file_name:gsub("%.[^.]+$", "")
+
+  file_name = file_name:gsub('(["\\ ])', "\\%1")
 
   -- Define commands for different file types
   local run_commands = {
