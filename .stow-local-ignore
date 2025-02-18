@@ -18,10 +18,11 @@ _darcs
 .+~               # emacs backup files
 \#.*\#            # emacs autosave files
 
-^/README.*
-^/LICENSE.*
+^/readme.*
+^/license.*
 ^/COPYING
 
 
 ^/install.*\.sh$  # Ignore .sh files starting with "install"
+setup-git-ssh.sh
 
