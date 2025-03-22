@@ -122,11 +122,23 @@ alias ls="eza --icons"
 alias sl="eza --icons"
 alias tree="eza --tree -I 'node_modules|.git|.expo' -L 1 --icons"
 
+..() {
+  local d=""
+
+  # Construct the `cd` command
+  for ((i=1; i<=$1; i++)); do
+    d+="../"
+  done
+
+  cd "$d" || return
+}
+
 # Easier navigation
-alias ..="cd .."
-alias ...="cd ../.."
-alias ....="cd ../../.."
-alias .....="cd ../../../.."
+alias ..=".."
+alias ...=".. 2"
+alias ....=".. 3"
+alias .....=".. 4"
+alias ......=".. 5"
 
 # Create directories with verbose output
 alias mkdir='mkdir -pv'
