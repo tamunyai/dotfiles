@@ -75,8 +75,10 @@ Linux*)
   if [ -n "$WSL_DISTRO_NAME" ]; then
     WINDOWS_HOME="$(wslpath "$(cmd.exe /C 'echo %USERPROFILE%' 2>/dev/null | tr -d '\r')")"
     export ANDROID_HOME="$WINDOWS_HOME/AppData/Local/Android/Sdk"
-    alias adb="$ANDROID_HOME/platform-tools/adb.exe"
-    # ln -sf "$ANDROID_HOME/platform-tools/adb.exe" "$ANDROID_HOME/platform-tools/adb" # For expo-cli
+
+    if [ ! -f "$ANDROID_HOME/platform-tools/adb" ]; then
+      cp "$ANDROID_HOME/platform-tools/adb.exe" "$ANDROID_HOME/platform-tools/adb"
+    fi
 
   else
     export ANDROID_HOME="$HOME/Android/Sdk"
