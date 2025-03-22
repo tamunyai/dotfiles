@@ -1,6 +1,6 @@
 [user]
 
-	name = tamunyai 
+	name = Thendo A Munyai
 	email = 60216128+tamunyai@users.noreply.github.com
 
 [init]
@@ -22,9 +22,9 @@
 
 [color "diff"]
 
-  meta = yellow
-  old = red 
-  new = green
+	meta = yellow
+	old = red
+	new = green
 
 [commit]
 
