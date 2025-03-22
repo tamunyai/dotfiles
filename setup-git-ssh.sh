@@ -76,7 +76,9 @@ info "checking for SSH key..."
 # Check if SSH key exists
 if [ ! -f ~/.ssh/id_ed25519 ]; then
 	user "enter your GitHub email address: "
-	read -nr 1 github_email </dev/tty
+	github_email=$1
+
+	# TODO: prompt user to verify email before proceeding
 
 	if [ -z "$github_email" ]; then
 		fail "email address is required."
