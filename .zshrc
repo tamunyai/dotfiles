@@ -116,9 +116,9 @@ bindkey '^n' history-search-forward  # Bind Ctrl+N for forward search through hi
 
 # Useful aliases
 alias l="eza -alh --icons"
-alias ls=eza
-alias sl=eza
-alias tree="eza --tree -I 'node_modules|.git|.expo' -L 1"
+alias ls="eza --icons"
+alias sl="eza --icons"
+alias tree="eza --tree -I 'node_modules|.git|.expo' -L 1 --icons"
 
 # Easier navigation
 alias ..="cd .."
