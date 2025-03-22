@@ -33,7 +33,6 @@
 [core]
 
 	editor = nvim
-	excludesfile = ~/.git-global-ignore
 
 [pull]
 
