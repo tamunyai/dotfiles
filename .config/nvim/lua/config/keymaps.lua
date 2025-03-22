@@ -56,7 +56,7 @@ map("n", "<leader>ef", function()
 
   -- Define commands for different file types
   local run_commands = {
-    python = "python3 " .. file_name,
+    python = "python3 -u " .. file_name,
     javascript = "node " .. file_name,
     sh = "bash " .. file_name,
     cpp = "g++ " .. file_name .. " -o " .. file_base_name .. " && " .. file_base_name .. " && rm -f " .. file_base_name,
