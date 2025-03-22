@@ -136,15 +136,11 @@ if ! command_exists "nvm"; then
 	curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.4/install.sh | bash || fail "NVM installation failed."
 	export NVM_DIR="$HOME/.nvm"
 	[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-fi
 
-if ! command_exists "npm"; then
 	info "Installing Node.js and npm via NVM..."
 	nvm install --lts || fail "Failed to install Node.js"
 	nvm use --lts || fail "Failed to switch to Node.js"
 	success "npm installed via NVM."
-else
-	success "npm already installed."
 fi
 
 # Final success message
