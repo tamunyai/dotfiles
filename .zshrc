@@ -134,7 +134,7 @@ alias tree="eza --tree -I 'node_modules|.git|.expo' -L 1 --icons"
 }
 
 # Easier navigation
-alias ..=".."
+alias ..=".. 1"
 alias ...=".. 2"
 alias ....=".. 3"
 alias .....=".. 4"
