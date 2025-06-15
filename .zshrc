@@ -120,7 +120,7 @@ bindkey '^n' history-search-forward  # Bind Ctrl+N for forward search through hi
 alias l="eza -alh --icons"
 alias ls="eza --icons"
 alias sl="eza --icons"
-alias tree="eza --tree -I 'node_modules|.git|.expo' -L 1 --icons"
+alias tree="eza --tree -I 'node_modules|.git|.expo|venv|__pycache__' -L 1 --icons"
 
 ..() {
   local d=""
@@ -164,7 +164,9 @@ alias va='source ./venv/bin/activate'
 # Notification after command completion
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history 1 | sed "s/^[ ]*[0-9]\+[ ]*//")"'
 
-# --- ZOXIDE INIT -------------------------------------------------------------
+# --- STARSHIP & ZOXIDE INIT --------------------------------------------------
+
+eval "$(starship init zsh)"
 
 # (smart `cd` replacement) for faster navigation
 eval "$(zoxide init --cmd cd zsh)"

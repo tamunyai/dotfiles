@@ -1,0 +1,100 @@
+format = """
+  \
+$directory\
+$git_branch\
+$git_status\
+$fill\
+$python\
+$lua\
+$nodejs\
+$golang\
+$haskell\
+$rust\
+$ruby\
+$package\
+$aws\
+$docker_context\
+$jobs\
+$cmd_duration\
+$line_break\
+$character\
+"""
+
+palette = "onedark"
+
+[directory]
+truncation_length = 1
+read_only_style = '197'
+read_only = '  '
+format = '[$path]($style)[$read_only]($read_only_style) '
+
+[git_branch]
+symbol = ' '
+
+[git_status]
+staged = '[ $count ](green)'
+deleted = '[ $count ](red)'
+untracked = '[ $count ](yellow)'
+modified = '[ $count ](blue)'
+renamed = '[ $count ](purple)'
+format = '$all_status$ahead_behind'
+
+[fill]
+symbol = ' '
+
+[python]
+symbol = ' '
+
+[lua]
+symbol = ' '
+
+[nodejs]
+symbol = ' '
+
+[golang]
+symbol = ' '
+
+[haskell]
+symbol = ' '
+
+[rust]
+symbol = ' '
+
+[ruby]
+symbol = ' '
+
+[package]
+symbol = '󰏗 '
+
+[aws]
+symbol = ' '
+
+[docker_context]
+symbol = ' '
+detect_files = ['docker-compose.yml', 'docker-compose.yaml', 'Dockerfile']
+detect_extensions = ['Dockerfile']
+
+[jobs]
+symbol = ' '
+number_threshold = 2  # Only show when multiple jobs are running
+
+[cmd_duration]
+format = '[took $duration]($style) '
+style = 'bold yellow'
+min_time = 2_000  # Only show duration for commands longer than 2 seconds
+
+[line_break]
+disabled = false
+
+[palettes.onedark]
+dark_blue = '#61afef'
+blue = '#56b6c2'
+red = '#e06c75'
+green = '#98c379'
+purple = '#c678dd'
+cyan = '#56b6c2'
+orange = '#be5046'
+yellow = '#e5c07b'
+gray = '#828997'
+white = '#abb2bf'
+black = '#2c323c'
