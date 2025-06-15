@@ -65,6 +65,11 @@ You can install these using your package manager:
 
 If you need to customize any of the configurations, you can edit the files in the `.dotfiles` directory directly. After making changes, use `stow` again to apply the updates.
 
+## Acknowledgements
+
+- [UnattendedWinstall](https://github.com/memstechtips/UnattendedWinstall/blob/main/UWScript.ps1#L310)
+- [SetupWindows](https://github.com/AmineDjeghri/awesome-os-setup/blob/main/docs/windows_workflow/setup_windows.ps1#L168)
+
 ## License
 
 This repository is licensed under the [MIT License](license)
