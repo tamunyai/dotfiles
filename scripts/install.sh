@@ -2,7 +2,8 @@
 #
 # sets up configurations for my preferred development environment.
 
-sudo -v
+set -euo pipefail
+IFS=$'\n\t'
 
 # --- LOAD FUNCTIONS ----------------------------------------------------------
 

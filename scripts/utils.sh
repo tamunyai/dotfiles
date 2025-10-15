@@ -2,6 +2,9 @@
 #
 # common utility functions for setup scripts.
 
+set -euo pipefail
+IFS=$'\n\t'
+
 # --- FUNCTIONS ---------------------------------------------------------------
 
 # display informational messages

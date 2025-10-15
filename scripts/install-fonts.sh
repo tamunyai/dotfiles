@@ -2,7 +2,8 @@
 #
 # installs fonts for better rendering.
 
-sudo -v
+set -euo pipefail
+IFS=$'\n\t'
 
 # --- LOAD FUNCTIONS ----------------------------------------------------------
 
