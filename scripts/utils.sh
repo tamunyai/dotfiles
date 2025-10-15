@@ -36,15 +36,24 @@ function fail() {
 # checks if a command is available in the system.
 # usage: command_exists <command_name>
 function command_exists() {
-	if [ -x "$(command -v "$1")" ]; then
-		return 0
+	local cmd="$1"
 
-	elif [ -x "$(command -v dpkg-query)" ]; then
-		dpkg-query -W --showformat='${Status}\n' "$1" 2>/dev/null | grep -q "install ok installed"
-
-	else
-		return 1
+	# prefer 'dpkg-query' if available
+	if command -v "dpkg-query" >/dev/null 2>&1; then
+		if dpkg-query -W --showformat='${Status}\n' "$cmd" 2>/dev/null | grep -q "install ok installed"; then
+			return 0
+		fi
 	fi
+
+	# fallback to ensure it's an actual executable
+	local path
+	path="$(type -P "$cmd" 2>/dev/null)"
+
+	if [ -n "$path" ] && [ -x "$path" ]; then
+		return 0
+	fi
+
+	return 1
 }
 
 # install a package using the appropriate package manager
