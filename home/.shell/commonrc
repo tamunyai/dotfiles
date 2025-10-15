@@ -1,0 +1,276 @@
+# ~/.shell/commonrc
+#
+# shared aliases, environment variables, and functions for all shells
+
+# --- FUNCTIONS ---------------------------------------------------------------
+
+# checks if a command is available in the system.
+# usage: command_exists <command_name>
+function command_exists() {
+	local cmd="$1"
+
+	# prefer 'dpkg-query' if available
+	if command -v "dpkg-query" >/dev/null 2>&1; then
+		if dpkg-query -W --showformat='${Status}\n' "$cmd" 2>/dev/null | grep -q "install ok installed"; then
+			return 0
+		fi
+	fi
+
+	# fallback to ensure it's an actual executable
+	local path
+	path="$(type -P "$cmd" 2>/dev/null)"
+
+	if [ -n "$path" ] && [ -x "$path" ]; then
+		return 0
+	fi
+
+	return 1
+}
+
+# moves up <n> directories, but not above $HOME.
+# usage: up <n>
+function up() {
+	local n=${1:-1}  # default to 1 if no argument given
+	local target="$PWD"
+
+	# iteratively move "up" one directory at a time.
+  for ((i=1; i<=n; i++)); do
+		local parent
+		parent=$(dirname "$target")
+
+		# stop if we're at or above $HOME
+    if [[ "$parent" == "$HOME" || "$parent" == "/" ]]; then
+      target="$HOME"
+      break
+    fi
+
+    target="$parent"
+  done
+
+	cd "$target" || return
+	pwd
+}
+
+# create a virtual environment in ./venv
+# usage: ve
+function ve() {
+	if command_exists "python"; then
+		python -m venv ./venv
+
+	elif command_exists "python3"; then
+		python3 -m venv ./venv
+
+	else
+		echo 've: python not found.'
+		return 1
+	fi
+}
+
+# activate a local Python virtual environment
+# usage: va
+function va() {
+	if [ -f "./venv/bin/activate" ]; then
+		# Linux/macOS
+		source ./venv/bin/activate
+
+	elif [ -f "./venv/Scripts/activate" ]; then
+		# Windows Git Bash
+		source ./venv/Scripts/activate
+
+	else
+		echo "va: no virtual environment found. run '\''ve'\'' first."
+		return 1
+	fi
+}
+
+# deactivate the current Python virtual environment
+# usage: vd
+function vd() {
+	if [ -n "$VIRTUAL_ENV" ]; then
+		deactivate 2>/dev/null || true
+		unset VIRTUAL_ENV
+		echo "Virtual environment deactivated."
+
+	else
+		echo "vd: no virtual environment is currently active."
+		return 1
+	fi
+}
+
+# --- HISTORY -----------------------------------------------------------------
+
+# don't put duplicate lines or lines starting with space in the history.
+HISTCONTROL=ignoreboth:erasedups
+
+# append to the history file, don't overwrite it
+shopt -s histappend 2>/dev/null || true
+
+# increase history persistence and sync across sessions
+HISTSIZE=32768
+HISTFILESIZE=$HISTSIZE
+HISTFILE="$HOME/.shell/history"
+
+# save and reload history after each command finishes
+export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
+
+# check the window size after each command and, if necessary,
+# update the values of LINES and COLUMNS.
+shopt -s checkwinsize 2>/dev/null || true
+
+# if set, the pattern "**" used in a pathname expansion context will
+# match all files and zero or more directories and subdirectories.
+#shopt -s globstar 2>/dev/null || true
+
+# auto-correct minor typos in 'cd' commands
+shopt -s cdspell 2>/dev/null || true
+
+# make filename globbing case-insensitive
+shopt -s nocaseglob 2>/dev/null || true
+
+# --- ENVIRONMENT VARIABLES ---------------------------------------------------
+
+export EDITOR='vim'
+export VISUAL="$EDITOR"
+export PYTHONIOENCODING='UTF-8'
+export MANPAGER='less -X'
+export BASH_SILENCE_DEPRECATION_WARNING=1
+
+# standard paths.
+export PATH="$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH"
+
+# set windows home directory on WSL
+if [ -n "$WSL_DISTRO_NAME" ]; then
+	export WINDOWS_HOME="$(wslpath "$(cmd.exe /C 'echo %USERPROFILE%' 2>/dev/null | tr -d '\r')")"
+fi
+
+# colored GCC warnings and errors
+export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+
+# --- PROMPT ------------------------------------------------------------------
+
+# set variable identifying the chroot you work in (used in the prompt below)
+if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
+	debian_chroot=$(cat /etc/debian_chroot)
+fi
+
+# set a fancy prompt (non-color, unless we know we "want" color)
+case "$TERM" in
+	xterm-color|*-256color) color_prompt=yes;;
+esac
+
+# uncomment for a colored prompt, if the terminal has the capability; turned
+# off by default to not distract the user: the focus in a terminal window
+# should be on the output of commands, not on the prompt
+#force_color_prompt=yes
+
+if [ -n "$force_color_prompt" ]; then
+	if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
+		# We have color support; assume it's compliant with Ecma-48
+		# (ISO/IEC-6429). (Lack of such support is extremely rare, and such
+		# a case would tend to support setf rather than setaf.)
+		color_prompt=yes
+
+	else
+		color_prompt=
+	fi
+fi
+
+if [ "$color_prompt" = yes ]; then
+	PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+
+else
+	PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+fi
+
+# If this is an xterm set the title to user@host:dir
+case "$TERM" in
+xterm*|rxvt*)
+	PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
+	;;
+*)
+	;;
+esac
+
+# --- ALIASES -----------------------------------------------------------------
+
+# enable color support of ls and also add handy aliases
+if command_exists dircolors; then
+	test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+	alias ls='ls --color=auto --group-directories-first'
+	alias sl='ls --color=auto --group-directories-first'
+	# alias dir='dir --color=auto'
+	# alias vdir='vdir --color=auto'
+
+	alias grep='grep --color=auto'
+	alias fgrep='fgrep --color=auto'
+	alias egrep='egrep --color=auto'
+fi
+
+# common ignore pattern for all tree views
+IGNORE_PATTERN='node_modules|.git|.expo|venv|__pycache__|.DS_Store|.next|.turbo|.idea|.vscode|dist|build|.parcel-cache|.cache|.pytest_cache|.mypy_cache|coverage'
+
+# some more ls aliases
+if command_exists "eza"; then
+	alias ls="eza --color=auto --group-directories-first --icons"
+	alias sl="eza --color=auto --group-directories-first --icons"
+
+	alias l="eza -alh --color=auto --group-directories-first --icons"
+	alias ll='eza -alh --color=auto --group-directories-first'
+	alias la='eza -a --color=auto --group-directories-first'
+	alias tree="eza -a --tree -I '${IGNORE_PATTERN}' -L 1 --group-directories-first --icons"
+
+else
+	alias l='ls -alh --color=auto --group-directories-first'
+	alias ll='ls -alh --color=auto --group-directories-first'
+	alias la='ls -a --color=auto --group-directories-first'
+	alias tree="ls -R --color=always --group-directories-first | grep -Ev '${IGNORE_PATTERN}' --color=always"
+fi
+
+# add an "alert" alias for long running commands.  Use like so:
+#   sleep 10; alert
+if command_exists "notify-send"; then
+	alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history | tail -n1 | sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+fi
+
+# easier navigation
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+
+# create directories with verbose output
+alias mkdir='mkdir -pv'
+
+# prevent accidental deletion or renaming of system-critical files
+alias rm='rm -I --preserve-root'
+alias mv='mv -i'
+alias cp='cp -i'
+alias ln='ln -i'
+
+# download files with continuation support
+alias wget='wget -c'
+
+# --- EXTRAS ------------------------------------------------------------------
+
+# starship prompt
+if command_exists "starship"; then
+	export STARSHIP_CACHE="${HOME}/.starship/cache"
+	export STARSHIP_CONFIG="${HOME}/.starship/config"
+
+	eval "$(starship init bash)"
+fi
+
+# zoxide (smart `cd` replacement) for faster navigation
+if command_exists "zoxide"; then
+	eval "$(zoxide init --cmd cd bash)"
+fi
+
+# nvm (version manager for node.js)
+if [ -d "${XDG_CONFIG_HOME:-$HOME}/.nvm" ]; then
+	export NVM_DIR="${XDG_CONFIG_HOME:-$HOME}/.nvm"
+
+	[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+	[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+fi
+
+# --- CLEANUP -----------------------------------------------------------------
+unset color_prompt debian_chroot

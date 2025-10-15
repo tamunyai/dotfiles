@@ -1,0 +1,16 @@
+# ~/.shell/localrc
+#
+# machine-specific or personal overrides
+# this file is sourced *after* ~/.shell/commonrc and not tracked by git.
+
+# --- ENVIRONMENT VARIABLES ---------------------------------------------------
+
+# export EDITOR='nvim'
+
+# standard paths.
+# export PATH="$HOME/dev/scripts:$PATH"
+
+# --- ALIASES -----------------------------------------------------------------
+
+# alias gs='git status -sb'
+# alias serve='python3 -m http.server 8000'
