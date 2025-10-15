@@ -56,62 +56,106 @@ function command_exists() {
 	return 1
 }
 
+# detect platform (Linux | macOS | Git Bash)
+# usage: detect_platform
+function detect_platform() {
+	case "$(uname -s)" in
+		Linux*)								echo "Linux" ;;
+		Darwin*)							echo "macOS" ;;
+		MINGW*|MSYS*|CYGWIN*) echo "Git Bash" ;;
+		*)										echo "Unknown" ;;
+	esac
+}
+
 # install a package using the appropriate package manager
 # usage: install <package>
 function install() {
 	local package=$1
+	local platform=$2
 
 	if command_exists "$package"; then
 		success "$package already installed."
-
-	else
-		info "installing ${package}.."
-
-		if command_exists apt-get; then
-			sudo apt-get install -y "$package"
-
-		elif command_exists yum; then
-			sudo yum install -y "$package"
-
-		elif command_exists dnf; then
-			sudo dnf install -y "$package"
-
-		elif command_exists pacman; then
-			sudo pacman -S --noconfirm "$package"
-
-		elif command_exists zypper; then
-			sudo zypper install -y "$package"
-
-		elif command_exists brew; then
-			brew install "$package"
-
-		else
-			fail "Unsupported package manager. Please install $package manually."
-		fi
+		return 0
 	fi
+
+	info "installing ${package}.."
+
+	case "$platform" in
+		Linux)
+			if command_exists apt-get; then
+				sudo apt-get update -y
+				sudo apt-get install -y "$package"
+
+			# elif command_exists dnf; then
+			# 	sudo dnf makecache -y
+			# 	sudo dnf install -y "$package"
+
+			# elif command_exists yum; then
+			# 	sudo yum makecache -y
+			# 	sudo yum install -y "$package"
+
+			# elif command_exists pacman; then
+			# 	sudo pacman -Sy --noconfirm
+			# 	sudo pacman -S --noconfirm "$package"
+
+			# elif command_exists zypper; then
+			# 	sudo zypper refresh
+			# 	sudo zypper install -y "$package"
+
+			else
+				fail "No supported Linux package manager found."
+			fi
+			;;
+
+		macOS)
+			if command_exists brew; then
+				brew install "$package"
+
+			else
+				fail "Homebrew not found. Please install Homebrew first and re-run this script."
+			fi
+			;;
+
+		"Git Bash")
+			user "Skipping system install for '$package' (Git Bash). Please ensure it's available in PATH."
+			exit 0
+			;;
+
+		*)
+			fail "Unsupported platform: $platform"
+			;;
+	esac
 }
 
-# copies text to the clipboard using the appropriate method for the current OS.
-# usage: copy_to_clipboard <text>
-copy_to_clipboard() {
-	os_name="$(uname -s)"
+# check if a file should be ignored
+# usage: should_ignore "relative/path/to/file" "ignore1 ignore2 ignore3"
+should_ignore() {
+	local file="$1"
 
-	case "$os_name" in
-	Linux*)
-		if command_exists xclip; then
-			xclip -selection clipboard <"$1"
+	shift
+	local ignore_list=("$@")
+
+	for ignore in "${ignore_list[@]}"; do
+		# skip empty lines or comments
+		[[ -z "$ignore" || "$ignore" =~ ^# ]] && continue
+
+		# remove trailing slash for comparison
+		ignore="${ignore%/}"
+
+		# match exact or prefix (directory)
+		if [[ "$file" == "$ignore" || "$file" == "$ignore/"* ]]; then
+			return 0  # true: ignore
 		fi
-		;;
 
-	Darwin*)
-		if command_exists pbcopy; then
-			pbcopy <"$1"
-		fi
-		;;
+	done
+	return 1  # false: do not ignore
+}
 
-	*)
-		user "clipboard copy is not supported on this operating system."
-		return 1
-		;;
-	esac
+# ensure a file has Unix line endings before sourcing
+# usage: fix_crlf_if_needed <file>
+fix_crlf_if_needed() {
+  local file="$1"
+  if [ -f "$file" ] && grep -q $'\r' "$file"; then
+    sed -i 's/\r$//' "$file"
+  fi
 }

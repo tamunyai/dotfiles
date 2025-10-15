@@ -12,66 +12,136 @@ source "${SCRIPT_DIR}/utils.sh"
 
 # --- INSTALLATION & CONFIGURATION --------------------------------------------
 
-sudo apt update -y
+DOTFILES_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
-# Array of packages to install
-packages=(
-	"zsh"
-	"fzf"
-	"curl"
-	"git"
-	"gcc"
-	"g++"
-	"python3-venv"
-	"unzip"
-	"xclip"
-	"ripgrep"
-	"neovim" # sudo add-apt-repository --yes ppa:neovim-ppa/unstable
-	"stow"
-	# "openjdk-17-jdk"
-	# "openjdk-17-jre"
-)
+# detect operating system
+platform=$(detect_platform)
+info "Detected platform: $platform"
 
-# Install packages in the array
+# array of packages to install
+packages=("curl" "git" "gcc" "g++" "python3")
+
+# install packages in the array
 for package in "${packages[@]}"; do
-	install "$package"
+	install "$package" "$platform"
 done
 
-# Change default shell to Zsh if necessary
-if [ "$SHELL" != "$(which zsh)" ]; then
-	sudo chsh -s "$(which zsh)" "$USER" || fail "Failed to change default shell to zsh."
-fi
-
-# Install zoxide
+# install `zoxide`, a smarter `cd` command
 if ! command_exists "zoxide"; then
-	curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh || fail "Zoxide installation failed."
+	info "Installing zoxide (smarter cd command)..."
+
+	if [ "$platform" = "Git Bash" ]; then
+		user "Skipping install for 'zoxide' (Git Bash)."
+
+	else
+		zoxide_url="https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh"
+		curl -fsSL "$zoxide_url" | sh || fail "Zoxide installation failed."
+		success "zoxide installed successfully."
+	fi
 fi
 
-# Install `eza`, an improved version of `ls`
+# install `eza`, an improved version of `ls`
 if ! command_exists "eza"; then
 	info "Installing eza (modern ls alternative)..."
-	wget -c https://github.com/eza-community/eza/releases/latest/download/eza_x86_64-unknown-linux-gnu.tar.gz -O - | tar -xz || fail "Failed to download eza."
-	sudo chmod +x eza || fail "Failed to make eza executable."
-	sudo chown root:root eza || fail "Failed to set ownership for eza."
-	sudo mv eza /usr/local/bin/eza || fail "Failed to move eza to /usr/local/bin."
-	success "eza installed."
-else
-	success "eza already installed."
+
+	if [ "$platform" = "Git Bash" ]; then
+		user "Skipping install for 'eza' (Git Bash)."
+
+	else
+		if ["$platform" = "Linux"]; then
+			tmp_dir=$(mktemp -d)
+			eza_url="https://github.com/eza-community/eza/releases/latest/download/eza_x86_64-unknown-linux-gnu.tar.gz"
+			wget -qO- "$eza_url" | tar -xz -C "$tmp_dir" || fail "Failed to extract eza."
+			sudo install -m 755 "$tmp_dir/eza" /usr/local/bin/eza || fail "Failed to install eza."
+			rm -rf "$tmp_dir"
+
+		elif ["$platform" = "macOS"] && command_exists "brew"; then
+			brew install eza || fail "Failed to install eza."
+		fi
+
+		success "eza installed successfully."
+	fi
 fi
 
-# Install NVM, Node.js, and npm
-if ! command_exists "nvm"; then
-	info "Installing NVM (Node Version Manager)..."
-	curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.4/install.sh | bash || fail "NVM installation failed."
-	export NVM_DIR="$HOME/.nvm"
-	[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+# install `starship` prompt
+if ! command_exists "starship"; then
+	info "Installing Starship prompt..."
 
+	if ["$platform" = "Git Bash"]; then
+		user "Skipping install for 'starship' (Git Bash)."
+
+	elif ["$platform" = "Linux"] || ["$platform" = "macOS"]; then
+		starship_url="https://starship.rs/install.sh"
+		curl -sS "$starship_url" | sh || fail "Starship installation failed."
+		success "Starship installed successfully."
+	fi
+fi
+
+# nvm paths
+NVM_DIR="${XDG_CONFIG_HOME:-$HOME}/.nvm"
+
+# install NVM (node version manager)
+if ! { [ -d "$NVM_DIR" ] && [ -s "$NVM_DIR/nvm.sh" ]; }; then
+	nvm_version='0.40.3'
+	nvm_url="https://raw.githubusercontent.com/nvm-sh/nvm/v${nvm_version}/install.sh"
+
+	info "Installing NVM (Node Version Manager)... v${nvm_version}"
+	curl -fsSL "$nvm_url" | bash || fail "NVM installation failed."
+	success "NVM installed successfully."
+fi
+
+# load NVM (for both new and existing installs)
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+# install Node.js and npm if NVM exists but Node/npm don't
+if { [ -d "$NVM_DIR" ] && [ -s "$NVM_DIR/nvm.sh" ]; } && \
+	 { ! command_exists "node" || ! command_exists "npm"; }; then
 	info "Installing Node.js and npm via NVM..."
-	nvm install --lts || fail "Failed to install Node.js"
-	nvm use --lts || fail "Failed to switch to Node.js"
-	success "npm installed via NVM."
+	nvm install --lts && nvm use --lts || fail "Failed to install or activate Node.js via NVM."
+	success "Node.js and npm (LTS) installed and activated via NVM."
 fi
 
-# Final success message
+# symlink dotfiles
+info "Linking all dotfiles from $DOTFILES_DIR to $HOME..."
+
+SOURCE_DIR="$DOTFILES_DIR/home"
+IGNORE_FILE="$DOTFILES_DIR/.dotignore"
+
+# read ignore list from file (ignore blank/comment lines)
+if [[ -f "$IGNORE_FILE" ]]; then
+	mapfile -t IGNORE_LIST < <(grep -vE '^\s*(#|$)' "$IGNORE_FILE" | sed 's/\r$//')
+
+else
+	IGNORE_LIST=()
+fi
+
+# recursively find all files in DOTFILES_DIR/home
+find "$SOURCE_DIR" -type f | while read -r src_path; do
+	# fix CRLF if needed
+	fix_crlf_if_needed "$src_path"
+
+	# compute the relative path from DOTFILES_DIR
+	rel_path="${src_path#$SOURCE_DIR/}"
+
+	# skip ignored files
+	should_ignore "$rel_path" "${IGNORE_LIST[@]}" && continue
+
+	# ensure the destination directory exists
+	dest_path="$HOME/$rel_path"
+	mkdir -p "$(dirname "$dest_path")"
+
+	# backup existing non-symlink files
+	if [[ -e "$dest_path" && ! -L "$dest_path" ]]; then
+		info "'$dest_path' exists (not a symlink), backing up."
+		mv "$dest_path" "$dest_path.bak"
+	fi
+
+	# create symlink
+	ln -sf "$src_path" "$dest_path"
+	success "Linked '$dest_path' -> '$src_path'"
+done
+
+# final success message
 success "Setup complete!"
 echo ''

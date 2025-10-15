@@ -1,13 +1,11 @@
-# --- Script Start ---
+# --- SCRIPT START ------------------------------------------------------------
 # Ensure script is running as Administrator
-# ---------------------------------------------------
 If (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]"Administrator")) {
   Write-Host "Please rerun with elevated privileges."
   Exit
 }
 
-# --- Bloatware Removal ---
-# ---------------------------------------------------
+# --- BLOATWARE REMOVAL -------------------------------------------------------
 Write-Host "Removing Pre-installed Apps and Features. Please wait . . ." -ForegroundColor Yellow
 
 # List of bloatware to remove (Modern Apps)
@@ -24,8 +22,8 @@ $bloatwareApps = @(
   'Microsoft.Xbox.TCUI', 'Microsoft.XboxApp', 'Microsoft.XboxGameOverlay', 'Microsoft.XboxGamingOverlay',
   'Microsoft.XboxIdentityProvider', 'Microsoft.XboxSpeechToTextOverlay', 'Microsoft.GamingApp',
   'Microsoft.YourPhone', 'Microsoft.OneDrive', 'Microsoft.549981C3F5F10', 'Microsoft.MixedReality.Portal',
-  'Microsoft.ScreenSketch', 'Microsoft.Windows.Ai.Copilot.Provider', 'Microsoft.Copilot',
-  'Microsoft.Copilot_8wekyb3d8bbwe', 'Microsoft.WindowsMeetNow', 'Microsoft.WindowsStore', 'Microsoft.Paint'
+  'Microsoft.Windows.Ai.Copilot.Provider', 'Microsoft.Copilot', 'Microsoft.Copilot_8wekyb3d8bbwe',
+	'Microsoft.WindowsMeetNow', 'Microsoft.WindowsStore', 'Microsoft.Paint'
 )
 
 # Define Legacy Windows Features & Apps to Remove
@@ -45,8 +43,7 @@ Get-WindowsCapability -Online |
 Where-Object { $legacyWindowsFeatures -contains ($_.Name -split '~')[0] } |
 Remove-WindowsCapability -Online -ErrorAction SilentlyContinue | Out-Null
 
-# --- Registry Modifications ---
-# ---------------------------------------------------
+# --- REGISTRY MODIFICATIONS --------------------------------------------------
 Write-Host "Applying registry modifications to prevent feature reinstallation and disable unwanted features." -ForegroundColor Yellow
 
 $regFileContent = @"
@@ -138,37 +135,3 @@ cmd /c "C:\Windows\System32\OneDriveSetup.exe -uninstall >nul 2>&1"
 # Disable Recall feature
 Write-Host "Disabling Recall feature..." -ForegroundColor Yellow
 Dism /Online /Disable-Feature /Featurename:Recall /NoRestart | Out-Null
-
-# --- Application Installation ---
-# ---------------------------------------------------
-
-# Check for internet connection
-if (-not (Test-Connection -ComputerName "8.8.8.8" -Count 1 -Quiet)) {
-  Write-Host "No internet connection detected. Please connect to the internet and try again." -BackgroundColor Red
-  Exit
-}
-
-Write-Host "Starting application installations..." -ForegroundColor Yellow
-
-# TODO: Update WinGet to ensure it's the latest version
-
-$appsToInstall = @(
-  @{ID = "Brave.Brave"; Name = "Brave Browser" },
-)
-
-# Attempt installation with WinGet
-foreach ($app in $appsToInstall) {
-  $appId = $app.ID
-  $appName = $app.Name
-
-  Write-Host "Installing: $appName..." -ForegroundColor Cyan
-
-  Try {
-    winget install --id $appId --accept-package-agreements --accept-source-agreements
-  }
-  Catch {
-    Write-Host "An unexpected error occurred while installing $appName. Error details: $_" -BackgroundColor Red
-  }
-}
-
-Write-Host "All applications installation attempts completed!" -ForegroundColor Green

@@ -10,12 +10,9 @@ IFS=$'\n\t'
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/utils.sh"
 
-# --- MAIN --------------------------------------------------------------------
+# --- INSTALLATION & CONFIGURATION --------------------------------------------
 
-# Latest version of the Nerd Fonts pack
-version='3.2.1'
-
-# Uncomment the fonts you want to install
+# uncomment the fonts you want to install
 declare -a fonts=(
 	# "Agave"
 	# "AnonymousPro"
@@ -68,11 +65,12 @@ declare -a fonts=(
 	# "VictorMono"
 )
 
-# Detect operating system and set destination font directory
-os_name="$(uname -s)"
+# detect operating system
+platform=$(detect_platform)
+info "Detected platform: $platform"
 
-case "$os_name" in
-Linux*)
+# set destination font directory
+if [ "$platform" = "Linux" ]; then
 	if [ -n "$WSL_DISTRO_NAME" ]; then
 		WINDOWS_HOME="$(wslpath "$(cmd.exe /C 'echo %USERPROFILE%' 2>/dev/null | tr -d '\r')")"
 		DEST_FONTS_DIR="$WINDOWS_HOME/Downloads"
@@ -80,30 +78,30 @@ Linux*)
 	else
 		DEST_FONTS_DIR="$HOME/.local/share/fonts"
 	fi
-	;;
-Darwin*)
+
+elif [ "$platform" = "macOS" ]; then
 	DEST_FONTS_DIR="$HOME/Library/Fonts"
-	;;
-*)
-	fail "Unable to detect the operating system."
-	;;
-esac
+
+elif [ "$platform" = "Git Bash" ]; then
+	DEST_FONTS_DIR="$HOME/Downloads"
+
+else
+	fail "Unsupported platform: $platform"
+fi
 
 mkdir -p "$DEST_FONTS_DIR"
 
-# Array of packages to install
-packages=(
-	"wget"
-	"unzip"
-)
+# array of packages to install
+packages=("wget" "unzip")
 
-# Install packages in the array
+# install packages in the array
 for package in "${packages[@]}"; do
-	install "$package"
+	install "$package" "$platform"
 done
 
-# Download and install selected Nerd Font(s)
+# download and install selected Nerd Font(s)
 for font in "${fonts[@]}"; do
+	version='3.4.0'
 	url="https://github.com/ryanoasis/nerd-fonts/releases/download/v${version}/${font}.zip"
 
 	info "downloading ${font} font..."
@@ -119,19 +117,40 @@ for font in "${fonts[@]}"; do
 	fi
 done
 
-# Detect if running in WSL
-if [[ -n "$WSL_DISTRO_NAME" ]]; then
-	user "Please install fonts manually as you are running WSL."
-	info "Fonts saved at: $DEST_FONTS_DIR/"
-else
-	# Remove unnecessary files and update font cache on Linux
-	find "$DEST_FONTS_DIR" -name '*Windows Compatible*' -delete
+case "$platform" in
+	Linux)
+		# detect if running in WSL
+		if [[ -n "$WSL_DISTRO_NAME" ]]; then
+			user "WSL detected: fonts need to be installed in Windows."
+			info "Fonts have been saved to: $DEST_FONTS_DIR/"
 
-	if command_exists fc-cache; then
-		fc-cache -fv "$DEST_FONTS_DIR"
-	fi
+		else
+			# remove unnecessary files and update font cache on Linux
+			find "$DEST_FONTS_DIR" -name '*Windows Compatible*' -delete
 
-	user "Please change your terminal font to display correctly."
-fi
+			if command_exists fc-cache; then
+				info "Updating font cache..."
+				fc-cache -fv "$DEST_FONTS_DIR"
+			fi
+
+			user "Fonts installed. You can now select them in your terminal emulator."
+		fi
+		;;
+
+	macOS)
+		user "Fonts installed in $DEST_FONTS_DIR."
+		user "Open Font Book.app to validate and enable them for terminal/IDE use."
+		;;
+
+	"Git Bash")
+		user "Fonts saved to $DEST_FONTS_DIR."
+		user "Set the font manually in your terminal (e.g., Windows Terminal or Git Bash options)."
+		;;
+
+	*)
+		user "Fonts saved to $DEST_FONTS_DIR."
+		user "Please follow your system's instructions to install them."
+		;;
+esac
 
 echo ''
