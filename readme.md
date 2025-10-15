@@ -2,19 +2,6 @@
 
 This repository contains my dotfiles for a consistent development setup across various environments.
 
-## Requirements
-
-Before installing, ensure you have the following:
-
-- **Git**.
-- [**GNU Stow**](https://www.gnu.org/software/stow/).
-
-You can install these using your package manager:
-
-- **Ubuntu/Debian**: `sudo apt-get install git stow`
-- **Fedora**: `sudo dnf install git stow`
-- **macOS**: `brew install git stow`
-
 ## Installation
 
 1. **Clone the Repository**
@@ -23,19 +10,19 @@ You can install these using your package manager:
    git clone https://github.com/tamunyai/dotfiles.git ~/.dotfiles
    ```
 
-2. **Run the Installation Script**
+2. **Run the Bootstrap Script**
 
    ```bash
-   cd ~/.dotfiles
-   ./install.sh
+   cd ~/.dotfiles/scripts
+   ./bootstrap.sh
    ```
 
    This script will:
 
-   - Install necessary dependencies (like `zsh`, `fzf`, `zoxide`, `neovim`, `eza`, etc.).
-   - Change your default shell to `zsh` if it's not already.
+   - Install necessary dependencies (like `zoxide`, `eza`, etc.).
    - Install `nodejs` and `npm` via `nvm` (Node Version Manager).
-   - Install `neovim` and set up other development tools.
+   - Link all dotfiles from `home/` to `$HOME`, skipping any files or directories listed in `.dotignore`.
+   - Automatically back up existing files in `$HOME` that would be overwritten by symlinks with a `.bak` extension.
 
 3. **Install Fonts for Better Rendering (Optional)**
 
@@ -51,24 +38,40 @@ You can install these using your package manager:
    - Detect your operating system and set the correct font directory.
    - Download and install Nerd Fonts (e.g., JetBrains Mono).
 
-4. **Create Symlinks Manually (Optional)**
-
-   If you'd prefer to manually symlink the files without running the script:
+4. Git/SSH Setup (Optional)
 
    ```bash
-   stow .
+   cd ~/.dotfiles/scripts
+   ./setup-git-ssh.sh
    ```
 
-   This command will automatically symlink the configuration files from the `.dotfiles` directory to their appropriate locations in your home directory.
+   This script will:
+
+   - Configure Git credentials and SSH keys for your environment.
+
+## Ignore List
+
+You can define files or directories that should be excluded from symlinking by creating a `.dotignore` file in the root of the repository (`~/.dotfiles/.dotignore`).
+
+- Paths should be relative to `home/`.
+- Example `.dotignore`:
+
+```sh
+# ignore directories
+.config/
+scripts/
+
+# ignore files
+.zshrc
+readme.md
+```
+
+- Blank lines and lines starting with `#` are ignored.
+- The bootstrap script will automatically skip any paths listed here.
 
 ## Customization
 
-If you need to customize any of the configurations, you can edit the files in the `.dotfiles` directory directly. After making changes, use `stow` again to apply the updates.
-
-## Acknowledgements
-
-- [UnattendedWinstall](https://github.com/memstechtips/UnattendedWinstall/blob/main/UWScript.ps1#L310)
-- [SetupWindows](https://github.com/AmineDjeghri/awesome-os-setup/blob/main/docs/windows_workflow/setup_windows.ps1#L168)
+To customize configurations, edit the files in the `home/` directory. Changes will be reflected after re-running the bootstrap script.
 
 ## License
 
