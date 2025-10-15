@@ -2,38 +2,38 @@ local function create_augroup(name)
   return vim.api.nvim_create_augroup("nvim_" .. name, { clear = true })
 end
 
--- Refresh the file when Vim gains focus, closes a terminal, or leaves a terminal
-vim.api.nvim_create_autocmd({ "FocusGained", "TermClose", "TermLeave" }, {
-  group = create_augroup("checktime"),
-  callback = function()
-    if vim.o.buftype ~= "nofile" then
-      vim.cmd("checktime")
-    end
-  end,
-})
+-- automatically reload files changed outside of Vim --------------------------
+-- vim.api.nvim_create_autocmd({ "FocusGained", "TermClose", "TermLeave" }, {
+--   group = create_augroup("autoread"),
+--   callback = function()
+--     if vim.o.buftype ~= "nofile" then
+--       vim.cmd("checktime")
+--     end
+--   end,
+-- })
 
--- Highlight yanked text after pasting
+-- highlight text on yanked (visual feedback) ---------------------------------
 vim.api.nvim_create_autocmd("TextYankPost", {
-  group = create_augroup("highlight_yank"),
+  group = create_augroup("yank_highlight"),
   callback = function()
     vim.highlight.on_yank()
   end,
 })
 
--- Adjust window sizes when Vim is resized
-vim.api.nvim_create_autocmd({ "VimResized" }, {
-  group = create_augroup("resize_splits"),
-  callback = function()
-    local current_tab = vim.fn.tabpagenr()
+-- automatically equalize split sizes when resizing Vim window ----------------
+-- vim.api.nvim_create_autocmd({ "VimResized" }, {
+--   group = create_augroup("resize_splits"),
+--   callback = function()
+--     local current_tab = vim.fn.tabpagenr()
 
-    vim.cmd("tabdo wincmd =")
-    vim.cmd("tabnext " .. current_tab)
-  end,
-})
+--     vim.cmd("tabdo wincmd =")
+--     vim.cmd("tabnext " .. current_tab)
+--   end,
+-- })
 
--- Jump to the last cursor position after opening a file
+-- restore last cursor position when reopening files --------------------------
 vim.api.nvim_create_autocmd("BufReadPost", {
-  group = create_augroup("last_loc"),
+  group = create_augroup("restore_cursor"),
   callback = function(event)
     local exclude = { "gitcommit" }
     local buf = event.buf
@@ -60,9 +60,50 @@ vim.api.nvim_create_autocmd({ "BufLeave", "FocusLost" }, {
   end,
 })
 
--- Close specific file types with 'q' and hide them from the buffer list
+-- make it easier to close man-files when opened inline
+-- vim.api.nvim_create_autocmd("FileType", {
+--   group = create_augroup("man_unlisted"),
+--   pattern = { "man" },
+--   callback = function(event)
+--     vim.bo[event.buf].buflisted = false
+--   end,
+-- })
+
+-- enable word wrapping and spell check for specific file types ---------------
 vim.api.nvim_create_autocmd("FileType", {
-  group = create_augroup("close_with_q"),
+  group = create_augroup("text_wrap_spell"),
+  pattern = { "text", "plaintex", "typst", "gitcommit", "markdown" },
+  callback = function()
+    vim.opt_local.wrap = true
+    vim.opt_local.spell = true
+  end,
+})
+
+-- fix conceallevel for JSON files --------------------------------------------
+vim.api.nvim_create_autocmd({ "FileType" }, {
+  group = create_augroup("json_fix"),
+  pattern = { "json", "jsonc", "json5" },
+  callback = function()
+    vim.opt_local.conceallevel = 0
+  end,
+})
+
+-- auto-create missing directories on save ------------------------------------
+vim.api.nvim_create_autocmd({ "BufWritePre" }, {
+  group = create_augroup("mkdir"),
+  callback = function(event)
+    if event.match:match("^%w%w+://") then
+      return
+    end
+
+    local file = vim.loop.fs_realpath(event.match) or event.match
+    vim.fn.mkdir(vim.fn.fnamemodify(file, ":p:h"), "p")
+  end,
+})
+
+-- close certain help/info-type windows with 'q' ------------------------------
+vim.api.nvim_create_autocmd("FileType", {
+  group = create_augroup("quick_close"),
   pattern = {
     "PlenaryTestPopup",
     "help",
@@ -83,46 +124,5 @@ vim.api.nvim_create_autocmd("FileType", {
   callback = function(event)
     vim.bo[event.buf].buflisted = false
     vim.keymap.set("n", "q", "<cmd>close<cr>", { buffer = event.buf, silent = true, desc = "Quit Buffer" })
-  end,
-})
-
--- Make it easier to close man-files when opened inline
-vim.api.nvim_create_autocmd("FileType", {
-  group = create_augroup("man_unlisted"),
-  pattern = { "man" },
-  callback = function(event)
-    vim.bo[event.buf].buflisted = false
-  end,
-})
-
--- Enable word wrapping and spell check for specific file types
-vim.api.nvim_create_autocmd("FileType", {
-  group = create_augroup("wrap_spell"),
-  pattern = { "text", "plaintex", "typst", "gitcommit", "markdown" },
-  callback = function()
-    vim.opt_local.wrap = true
-    vim.opt_local.spell = true
-  end,
-})
-
--- Fix conceallevel for json files
-vim.api.nvim_create_autocmd({ "FileType" }, {
-  group = create_augroup("json_conceal"),
-  pattern = { "json", "jsonc", "json5" },
-  callback = function()
-    vim.opt_local.conceallevel = 0
-  end,
-})
-
--- Auto-create directories before saving a file
-vim.api.nvim_create_autocmd({ "BufWritePre" }, {
-  group = create_augroup("auto_create_dir"),
-  callback = function(event)
-    if event.match:match("^%w%w+://") then
-      return
-    end
-
-    local file = vim.loop.fs_realpath(event.match) or event.match
-    vim.fn.mkdir(vim.fn.fnamemodify(file, ":p:h"), "p")
   end,
 })

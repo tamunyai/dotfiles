@@ -32,7 +32,7 @@
 
 [core]
 
-	editor = nvim
+	editor =
 
 [pull]
 
