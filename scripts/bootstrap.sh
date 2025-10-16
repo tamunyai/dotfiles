@@ -28,8 +28,8 @@ if [ "$platform" != "Git Bash" ]; then
 	done
 
 	# change default shell to Zsh if necessary
-	if [ "$SHELL" != "$(which zsh)" ]; then
-		sudo chsh -s "$(which zsh)" "$USER" || fail "Failed to change default shell to zsh."
+	if [ "$SHELL" != "$(command -v zsh)" ]; then
+		sudo chsh -s "$(command -v zsh)" "$USER" || fail "Failed to change default shell to zsh."
 	fi
 
 	# install `zoxide`, a smarter `cd` command
@@ -45,7 +45,7 @@ if [ "$platform" != "Git Bash" ]; then
 	if ! command_exists "eza"; then
 		info "Installing eza (modern ls alternative)..."
 
-		if ["$platform" = "Linux"]; then
+		if [ "$platform" = "Linux" ]; then
 			tmp_dir=$(mktemp -d)
 			eza_url="https://github.com/eza-community/eza/releases/latest/download/eza_x86_64-unknown-linux-gnu.tar.gz"
 
@@ -65,7 +65,7 @@ if [ "$platform" != "Git Bash" ]; then
 		info "Installing Starship prompt..."
 
 		starship_url="https://starship.rs/install.sh"
-		curl -sS "$starship_url" | sh || fail "Starship installation failed."
+		curl -fsSL "$starship_url" | sh -s -- -y || fail "Starship installation failed."
 		success "Starship installed successfully."
 	fi
 fi
