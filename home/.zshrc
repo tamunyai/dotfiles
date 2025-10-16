@@ -61,11 +61,12 @@ bindkey -e                           # use Emacs-style key bindings.
 bindkey '^p' history-search-backward # bind Ctrl+P for backward search through history.
 bindkey '^n' history-search-forward  # bind Ctrl+N for forward search through history.
 
-# --- ALIASES -----------------------------------------------------------------
+# --- ENVIRONMENT VARIABLES ---------------------------------------------------
 
-# colored GCC warnings and errors
-export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
-# export LESS_TERMCAP_md="${yellow}"
+if command_exists "nvim"; then
+	export EDITOR='nvim'
+	export VISUAL="$EDITOR"
+fi
 
 # --- EXTRAS ------------------------------------------------------------------
 
