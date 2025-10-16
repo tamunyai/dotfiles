@@ -20,7 +20,7 @@ info "Detected platform: $platform"
 
 if [ "$platform" != "Git Bash" ]; then
 	# array of packages to install
-	packages=("zsh" "fzf" "curl" "git" "gcc" "g++" "python3" "neovim")
+	packages=("zsh" "fzf" "curl" "git" "gcc" "g++" "python3-venv" "neovim")
 
 	# install packages in the array
 	for package in "${packages[@]}"; do
@@ -68,32 +68,32 @@ if [ "$platform" != "Git Bash" ]; then
 		curl -fsSL "$starship_url" | sh -s -- -y || fail "Starship installation failed."
 		success "Starship installed successfully."
 	fi
-fi
 
-# --- NVM / NODE --------------------------------------------------------------
+	# --- NVM / NODE ------------------------------------------------------------
 
-NVM_DIR="${XDG_CONFIG_HOME:-$HOME}/.nvm"
+	NVM_DIR="${XDG_CONFIG_HOME:-$HOME}/.nvm"
 
-# install NVM (node version manager)
-if ! { [ -d "$NVM_DIR" ] && [ -s "$NVM_DIR/nvm.sh" ]; }; then
-	nvm_version='0.40.3'
-	nvm_url="https://raw.githubusercontent.com/nvm-sh/nvm/v${nvm_version}/install.sh"
+	# install NVM (node version manager)
+	if ! { [ -d "$NVM_DIR" ] && [ -s "$NVM_DIR/nvm.sh" ]; }; then
+		nvm_version='0.40.3'
+		nvm_url="https://raw.githubusercontent.com/nvm-sh/nvm/v${nvm_version}/install.sh"
 
-	info "Installing NVM (Node Version Manager)... v${nvm_version}"
-	curl -fsSL "$nvm_url" | bash || fail "NVM installation failed."
-	success "NVM installed successfully."
-fi
+		info "Installing NVM (Node Version Manager)... v${nvm_version}"
+		curl -fsSL "$nvm_url" | sh || fail "NVM installation failed."
+		success "NVM installed successfully."
+	fi
 
-# load NVM (for both new and existing installs)
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+	# load NVM (for both new and existing installs)
+	[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+	[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
-# install Node.js and npm if NVM exists but Node/npm don't
-if { [ -d "$NVM_DIR" ] && [ -s "$NVM_DIR/nvm.sh" ]; } && \
-	 { ! command_exists "node" || ! command_exists "npm"; }; then
-	info "Installing Node.js and npm via NVM..."
-	nvm install --lts && nvm use --lts || fail "Failed to install or activate Node.js via NVM."
-	success "Node.js and npm (LTS) installed and activated via NVM."
+	# install Node.js and npm if NVM exists but Node/npm don't
+	if { [ -d "$NVM_DIR" ] && [ -s "$NVM_DIR/nvm.sh" ]; } && \
+		{ ! command_exists "node" || ! command_exists "npm"; }; then
+		info "Installing Node.js and npm via NVM..."
+		nvm install --lts && nvm use --lts || fail "Failed to install or activate Node.js via NVM."
+		success "Node.js and npm (LTS) installed and activated via NVM."
+	fi
 fi
 
 # --- DOTFILES SYMLINKING -----------------------------------------------------
