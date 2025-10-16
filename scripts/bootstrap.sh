@@ -18,39 +18,37 @@ DOTFILES_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 platform=$(detect_platform)
 info "Detected platform: $platform"
 
-# array of packages to install
-packages=("curl" "git" "gcc" "g++" "python3")
+if [ "$platform" != "Git Bash" ]; then
+	# array of packages to install
+	packages=("zsh" "fzf" "curl" "git" "gcc" "g++" "python3" "neovim")
 
-# install packages in the array
-for package in "${packages[@]}"; do
-	install "$package" "$platform"
-done
+	# install packages in the array
+	for package in "${packages[@]}"; do
+		install "$package" "$platform"
+	done
 
-# install `zoxide`, a smarter `cd` command
-if ! command_exists "zoxide"; then
-	info "Installing zoxide (smarter cd command)..."
+	# change default shell to Zsh if necessary
+	if [ "$SHELL" != "$(which zsh)" ]; then
+		sudo chsh -s "$(which zsh)" "$USER" || fail "Failed to change default shell to zsh."
+	fi
 
-	if [ "$platform" = "Git Bash" ]; then
-		user "Skipping install for 'zoxide' (Git Bash)."
+	# install `zoxide`, a smarter `cd` command
+	if ! command_exists "zoxide"; then
+		info "Installing zoxide (smarter cd command)..."
 
-	else
 		zoxide_url="https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh"
 		curl -fsSL "$zoxide_url" | sh || fail "Zoxide installation failed."
 		success "zoxide installed successfully."
 	fi
-fi
 
-# install `eza`, an improved version of `ls`
-if ! command_exists "eza"; then
-	info "Installing eza (modern ls alternative)..."
+	# install `eza`, an improved version of `ls`
+	if ! command_exists "eza"; then
+		info "Installing eza (modern ls alternative)..."
 
-	if [ "$platform" = "Git Bash" ]; then
-		user "Skipping install for 'eza' (Git Bash)."
-
-	else
 		if ["$platform" = "Linux"]; then
 			tmp_dir=$(mktemp -d)
 			eza_url="https://github.com/eza-community/eza/releases/latest/download/eza_x86_64-unknown-linux-gnu.tar.gz"
+
 			wget -qO- "$eza_url" | tar -xz -C "$tmp_dir" || fail "Failed to extract eza."
 			sudo install -m 755 "$tmp_dir/eza" /usr/local/bin/eza || fail "Failed to install eza."
 			rm -rf "$tmp_dir"
@@ -61,23 +59,19 @@ if ! command_exists "eza"; then
 
 		success "eza installed successfully."
 	fi
-fi
 
-# install `starship` prompt
-if ! command_exists "starship"; then
-	info "Installing Starship prompt..."
+	# install `starship` prompt
+	if ! command_exists "starship"; then
+		info "Installing Starship prompt..."
 
-	if ["$platform" = "Git Bash"]; then
-		user "Skipping install for 'starship' (Git Bash)."
-
-	elif ["$platform" = "Linux"] || ["$platform" = "macOS"]; then
 		starship_url="https://starship.rs/install.sh"
 		curl -sS "$starship_url" | sh || fail "Starship installation failed."
 		success "Starship installed successfully."
 	fi
 fi
 
-# nvm paths
+# --- NVM / NODE --------------------------------------------------------------
+
 NVM_DIR="${XDG_CONFIG_HOME:-$HOME}/.nvm"
 
 # install NVM (node version manager)
@@ -102,7 +96,8 @@ if { [ -d "$NVM_DIR" ] && [ -s "$NVM_DIR/nvm.sh" ]; } && \
 	success "Node.js and npm (LTS) installed and activated via NVM."
 fi
 
-# symlink dotfiles
+# --- DOTFILES SYMLINKING -----------------------------------------------------
+
 info "Linking all dotfiles from $DOTFILES_DIR to $HOME..."
 
 SOURCE_DIR="$DOTFILES_DIR/home"
@@ -114,6 +109,16 @@ if [[ -f "$IGNORE_FILE" ]]; then
 
 else
 	IGNORE_LIST=()
+fi
+
+# add platform-specific ignores
+if [ "$platform" = "Git Bash" ]; then
+	# ignore Zsh + Neovim configs on Git Bash
+	IGNORE_LIST+=(".zshrc" ".config/nvim/")
+
+else
+	# ignore Bash + Vim configs on Linux/macOS
+	IGNORE_LIST+=(".bashrc" ".vimrc")
 fi
 
 # recursively find all files in DOTFILES_DIR/home

@@ -1,4 +1,1 @@
 # list of files/directories to ignore (relative to home/)
-
-.config/
-.zshrc

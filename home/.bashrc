@@ -31,6 +31,21 @@ if ! shopt -oq posix; then
   fi
 fi
 
+# --- EXTRAS ------------------------------------------------------------------
+
+# starship prompt
+if command_exists "starship"; then
+	export STARSHIP_CACHE="${HOME}/.starship/cache"
+	export STARSHIP_CONFIG="${HOME}/.starship/config.toml"
+
+	eval "$(starship init bash)"
+fi
+
+# zoxide (smart `cd` replacement) for faster navigation
+if command_exists "zoxide"; then
+	eval "$(zoxide init --cmd cd bash)"
+fi
+
 # --- CLEANUP -----------------------------------------------------------------
 unset -f command_exists 2>/dev/null
 unset -v color_prompt force_color_prompt debian_chroot 2>/dev/null

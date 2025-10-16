@@ -67,5 +67,20 @@ bindkey '^n' history-search-forward  # bind Ctrl+N for forward search through hi
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 # export LESS_TERMCAP_md="${yellow}"
 
+# --- EXTRAS ------------------------------------------------------------------
+
+# starship prompt
+if command_exists "starship"; then
+	export STARSHIP_CACHE="${HOME}/.starship/cache"
+	export STARSHIP_CONFIG="${HOME}/.starship/config.toml"
+
+	eval "$(starship init zsh)"
+fi
+
+# zoxide (smart `cd` replacement) for faster navigation
+if command_exists "zoxide"; then
+	eval "$(zoxide init --cmd cd zsh)"
+fi
+
 # --- CLEANUP -----------------------------------------------------------------
 unset -f command_exists 2>/dev/null

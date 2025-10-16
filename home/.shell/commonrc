@@ -251,19 +251,6 @@ alias wget='wget -c'
 
 # --- EXTRAS ------------------------------------------------------------------
 
-# starship prompt
-if command_exists "starship"; then
-	export STARSHIP_CACHE="${HOME}/.starship/cache"
-	export STARSHIP_CONFIG="${HOME}/.starship/config.toml"
-
-	eval "$(starship init bash)"
-fi
-
-# zoxide (smart `cd` replacement) for faster navigation
-if command_exists "zoxide"; then
-	eval "$(zoxide init --cmd cd bash)"
-fi
-
 # nvm (version manager for node.js)
 if [ -d "${XDG_CONFIG_HOME:-$HOME}/.nvm" ]; then
 	export NVM_DIR="${XDG_CONFIG_HOME:-$HOME}/.nvm"
