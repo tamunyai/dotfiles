@@ -72,9 +72,6 @@ fi
 
 # starship prompt
 if command_exists "starship"; then
-	export STARSHIP_CACHE="${HOME}/.starship/cache"
-	export STARSHIP_CONFIG="${HOME}/.starship/config.toml"
-
 	eval "$(starship init zsh)"
 fi
 

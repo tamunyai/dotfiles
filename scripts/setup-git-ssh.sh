@@ -16,7 +16,7 @@ info "checking for SSH key..."
 
 # check if SSH key exists
 # usage: ./setup-git-sh.sh <github_email>
-if [ ! -f ~/.ssh/id_ed25519 ]; then
+if [ ! -f "$HOME/.ssh/id_ed25519" ]; then
 	github_email=$1
 
 	if [ -z "$github_email" ]; then
@@ -35,7 +35,7 @@ if [ ! -f ~/.ssh/id_ed25519 ]; then
 
 	user "Please manually copy the public key below:"
 	echo ''
-	cat ~/.ssh/id_ed25519.pub
+	cat "$HOME/.ssh/id_ed25519.pub"
 	echo ''
 
 	info "Now, go to https://github.com/settings/keys and add the key."
@@ -45,7 +45,7 @@ else
 fi
 
 # test connection
-if [ -f ~/.ssh/id_ed25519 ] && user "Do you want to test SSH connection to GitHub now? (y/n): "; then
+if [ -f "$HOME/.ssh/id_ed25519" ] && user "Do you want to test SSH connection to GitHub now? (y/n): "; then
 	read -r answer
 
 	if [[ "$answer" =~ ^[Yy]$ ]]; then

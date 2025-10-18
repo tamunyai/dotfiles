@@ -89,10 +89,8 @@ else
 	fail "Unsupported platform: $platform"
 fi
 
-mkdir -p "$DEST_FONTS_DIR"
-
 # array of packages to install
-packages=("wget" "unzip")
+packages=("unzip")
 
 # install packages in the array
 for package in "${packages[@]}"; do
@@ -106,7 +104,7 @@ for font in "${fonts[@]}"; do
 
 	info "downloading ${font} font..."
 
-	if wget -q --show-progress "$url" -P "$DEST_FONTS_DIR/"; then
+	if curl -fL --progress-bar -o "$DEST_FONTS_DIR/${font}.zip" --create-dirs "$url"; then
 		success "$font font downloaded successfully."
 		unzip -n "$DEST_FONTS_DIR/${font}.zip" -d "$DEST_FONTS_DIR/${font}" -x "*LICENSE*" "*.txt*" "*.md*"
 		rm -rf "$DEST_FONTS_DIR/${font}.zip"
@@ -119,8 +117,8 @@ done
 
 case "$platform" in
 	Linux)
-		# detect if running in WSL
 		if [[ -n "$WSL_DISTRO_NAME" ]]; then
+			# if running in WSL
 			user "WSL detected: fonts need to be installed in Windows."
 			info "Fonts have been saved to: $DEST_FONTS_DIR/"
 
@@ -144,7 +142,7 @@ case "$platform" in
 
 	"Git Bash")
 		user "Fonts saved to $DEST_FONTS_DIR."
-		user "Set the font manually in your terminal (e.g., Windows Terminal or Git Bash options)."
+		user "Set the font manually in your terminal."
 		;;
 
 	*)

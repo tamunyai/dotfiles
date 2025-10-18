@@ -14,11 +14,6 @@ nnoremap <Tab> :bprevious<CR>
 nnoremap <S-Tab> :bnext<CR>
 nnoremap <leader>` :e #<CR>
 
-" --- delete without affecting the default register ---------------------------
-nnoremap d "_d
-vnoremap d "_d
-nnoremap x "_x
-
 " --- clear search highlights when pressing <Esc> -----------------------------
 nnoremap <esc> :noh<cr><esc>
 inoremap <esc> <esc>:noh<cr><esc>

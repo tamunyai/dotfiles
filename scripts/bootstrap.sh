@@ -34,9 +34,9 @@ if [ "$platform" != "Git Bash" ]; then
 
 	# install `zoxide`, a smarter `cd` command
 	if ! command_exists "zoxide"; then
-		info "Installing zoxide (smarter cd command)..."
-
 		zoxide_url="https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh"
+
+		info "Installing zoxide (smarter cd command)..."
 		curl -fsSL "$zoxide_url" | sh || fail "Zoxide installation failed."
 		success "zoxide installed successfully."
 	fi
@@ -50,10 +50,10 @@ if [ "$platform" != "Git Bash" ]; then
 			eza_url="https://github.com/eza-community/eza/releases/latest/download/eza_x86_64-unknown-linux-gnu.tar.gz"
 
 			wget -qO- "$eza_url" | tar -xz -C "$tmp_dir" || fail "Failed to extract eza."
-			sudo install -m 755 "$tmp_dir/eza" /usr/local/bin/eza || fail "Failed to install eza."
+			sudo install -m 755 "$tmp_dir/eza" "/usr/local/bin/eza" || fail "Failed to install eza."
 			rm -rf "$tmp_dir"
 
-		elif ["$platform" = "macOS"] && command_exists "brew"; then
+		elif [ "$platform" = "macOS" ] && command_exists "brew"; then
 			brew install eza || fail "Failed to install eza."
 		fi
 
@@ -62,9 +62,9 @@ if [ "$platform" != "Git Bash" ]; then
 
 	# install `starship` prompt
 	if ! command_exists "starship"; then
-		info "Installing Starship prompt..."
-
 		starship_url="https://starship.rs/install.sh"
+
+		info "Installing Starship prompt..."
 		curl -fsSL "$starship_url" | sh -s -- -y || fail "Starship installation failed."
 		success "Starship installed successfully."
 	fi
@@ -79,7 +79,7 @@ if [ "$platform" != "Git Bash" ]; then
 		nvm_url="https://raw.githubusercontent.com/nvm-sh/nvm/v${nvm_version}/install.sh"
 
 		info "Installing NVM (Node Version Manager)... v${nvm_version}"
-		curl -fsSL "$nvm_url" | sh || fail "NVM installation failed."
+		curl -fsSL "$nvm_url" | bash || fail "NVM installation failed."
 		success "NVM installed successfully."
 	fi
 
@@ -88,11 +88,36 @@ if [ "$platform" != "Git Bash" ]; then
 	[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
 	# install Node.js and npm if NVM exists but Node/npm don't
-	if { [ -d "$NVM_DIR" ] && [ -s "$NVM_DIR/nvm.sh" ]; } && \
+	if { [ -d "$NVM_DIR" ] && [ -s "$NVM_DIR/nvm.sh" ]; } &&
 		{ ! command_exists "node" || ! command_exists "npm"; }; then
 		info "Installing Node.js and npm via NVM..."
 		nvm install --lts && nvm use --lts || fail "Failed to install or activate Node.js via NVM."
 		success "Node.js and npm (LTS) installed and activated via NVM."
+	fi
+
+else
+	# Git Bash path
+	LOCAL_BIN="$HOME/.local/bin"
+
+	# ensure the local bin directory exists
+	mkdir -p "$LOCAL_BIN" || fail "Failed to create $LOCAL_BIN"
+
+	# install `zoxide`, a smarter `cd` command
+	if ! command_exists "zoxide"; then
+		zoxide_url="https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh"
+
+		info "Installing zoxide (smarter cd command)..."
+		curl -fsSL "$zoxide_url" | sh -s -- --bin-dir "$LOCAL_BIN" || fail "Zoxide installation failed."
+		success "zoxide installed successfully."
+	fi
+
+	# install `starship` prompt
+	if ! command_exists "starship"; then
+		starship_url="https://starship.rs/install.sh"
+
+		info "Installing Starship prompt..."
+		curl -fsSL "$starship_url" | sh -s -- -y --bin-dir "$LOCAL_BIN" || fail "Starship installation failed."
+		success "Starship installed successfully."
 	fi
 fi
 
@@ -109,16 +134,6 @@ if [[ -f "$IGNORE_FILE" ]]; then
 
 else
 	IGNORE_LIST=()
-fi
-
-# add platform-specific ignores
-if [ "$platform" = "Git Bash" ]; then
-	# ignore Zsh + Neovim configs on Git Bash
-	IGNORE_LIST+=(".zshrc" ".config/nvim/")
-
-else
-	# ignore Bash + Vim configs on Linux/macOS
-	IGNORE_LIST+=(".bashrc" ".vimrc")
 fi
 
 # recursively find all files in DOTFILES_DIR/home

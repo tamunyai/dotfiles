@@ -4,22 +4,22 @@ map("n", "<leader>w", "<cmd>w<cr>", { desc = "Save the current file" })
 map("n", "<leader>q", "<cmd>q<cr>", { desc = "[Q]uit the current window" })
 map("n", "<leader>qq", "<cmd>qa<cr>", { desc = "[Q]uit All" })
 
--- indent and outdent in visual mode
+-- indent and outdent in visual mode ------------------------------------------
 map("v", "<", "<gv", { desc = "Outdent" })
 map("v", ">", ">gv", { desc = "Indent" })
 
--- paste without overwriting the unnamed register
+-- paste without overwriting the unnamed register -----------------------------
 map("v", "p", '"_dP', { desc = "[P]aste without overwriting unnamed register" })
 
--- buffer navigation
+-- buffer navigation ----------------------------------------------------------
 map("n", "<Tab>", "<cmd>bprevious<cr>", { desc = "Prev Buffer" })
 map("n", "<S-Tab>", "<cmd>bnext<cr>", { desc = "Next Buffer" })
 map("n", "<leader>`", "<cmd>e #<cr>", { desc = "Switch to Other Buffer" })
 
--- clear search highlights when pressing <Esc>
+-- clear search highlights when pressing <Esc> --------------------------------
 map({ "i", "n" }, "<esc>", "<cmd>noh<cr><esc>", { desc = "Escape and Clear search highlight" })
 
--- use gj/gk instead of j/k if no count is provided
+-- use gj/gk instead of j/k if no count is provided ---------------------------
 local smart_nav = "v:count == 0 ? 'g%s' : '%s'"
 map({ "n", "x" }, "j", smart_nav:format("j", "j"), { desc = "Down", expr = true, silent = true })
 map({ "n", "x" }, "k", smart_nav:format("k", "k"), { desc = "Up", expr = true, silent = true })
@@ -56,6 +56,6 @@ map("n", "<leader>ef", function()
     vim.cmd(":botright sp | terminal " .. run_commands[file_type])
     vim.cmd("startinsert") -- automatically enter insert mode in the terminal
   else
-    print("This file type is not supported for execution: " .. file_type)
+    print("nvim: this file type is not supported for execution: " .. file_type)
   end
 end, { noremap = true, silent = true, desc = "[E]xecute [F]ile" })

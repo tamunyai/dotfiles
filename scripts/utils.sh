@@ -118,7 +118,6 @@ function install() {
 
 		"Git Bash")
 			user "Skipping system install for '$package' (Git Bash). Please ensure it's available in PATH."
-			exit 0
 			;;
 
 		*)

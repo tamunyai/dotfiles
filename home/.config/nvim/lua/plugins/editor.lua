@@ -125,9 +125,9 @@ telescope.dependencies = {
 
 telescope.keys = {
   {
-    "<leader><space>",
+    "<leader>ff",
     "<cmd>Telescope find_files<cr>",
-    desc = "Find Files",
+    desc = "[F]ind [F]iles",
   },
   {
     "<leader>fd",
@@ -144,7 +144,6 @@ telescope.keys = {
     "<cmd>Telescope buffers  sort_mru=true sort_lastused=true<cr>",
     desc = "[F]ind [B]uffers",
   },
-
   {
     "<leader>ft",
     "<cmd>Telescope todo-comments<cr>",

@@ -1,1 +1,9 @@
 # list of files/directories to ignore (relative to home/)
+
+# ignore Zsh + Neovim configs on Git Bash
+# .zshrc
+# .config/nvim/
+
+# ignore Bash + Vim configs on Linux/macOS
+# .bashrc"
+# .vimrc

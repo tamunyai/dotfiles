@@ -1,5 +1,5 @@
 " directory where plugins will be installed
-let s:plugin_dir = expand('~/.vim/plugins')
+let s:plugin_dir = expand('~/.local/share/vim/plugged')
 
 " ensure a plugin is installed and added to runtimepath
 " usage: call s:EnsurePlugin('tpope/vim-sensible')
@@ -27,11 +27,5 @@ endfunction
 
 call s:EnsurePlugin('junegunn/fzf')
 call s:EnsurePlugin('junegunn/fzf.vim')
-
-nnoremap <leader>ff :Files<CR>
-nnoremap <leader>fo :History<CR>
-nnoremap <leader>fb :Buffers<CR>
-nnoremap <leader>fh :Helptags<CR>
-nnoremap <leader>fs :Rg <C-r><C-w><CR>
-nnoremap <leader>fg :Rg<Space>
-nnoremap <leader>fc :execute 'Rg ' . expand('%:t:r')<CR>
+call s:EnsurePlugin('joshdick/onedark.vim')
+call s:EnsurePlugin('itchyny/lightline.vim')

@@ -8,8 +8,8 @@ set ignorecase															" ignore case when searching
 set smartcase																" override 'ignorecase' if search contains uppercase letters
 set incsearch																" show search matches while typing
 set hlsearch																" highlight all matches from last search
-" set signcolumn=yes													" always show the sign column
-" set termguicolors														" enable true color support in terminal
+set signcolumn=yes													" always show the sign column
+set termguicolors														" enable true color support in terminal
 set encoding=utf-8													" set internal encoding to UTF-8
 set fileencoding=utf-8											" set default file encoding to UTF-8
 set mouse=a																	" enable mouse support in all modes

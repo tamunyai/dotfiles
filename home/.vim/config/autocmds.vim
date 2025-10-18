@@ -1,4 +1,5 @@
 " --- automatically reload files changed outside of Vim -----------------------
+
 " augroup vim_autoread
 " 	autocmd!
 " 	autocmd FocusGained,BufEnter *
@@ -6,12 +7,14 @@
 " augroup END
 
 " --- remove trailing whitespace on save --------------------------------------
+
 augroup vim_trim_whitespace
 	autocmd!
 	autocmd BufWritePre * :%s/\s\+$//e
 augroup END
 
 " --- highlight text on yanked (visual feedback) ------------------------------
+
 " augroup vim_yank_highlight
 " 	autocmd!
 " 	autocmd TextYankPost *
@@ -19,12 +22,14 @@ augroup END
 " augroup END
 
 " --- automatically equalize split sizes when resizing Vim window -------------
+
 " augroup vim_resize_splits
 "   autocmd!
 "   autocmd VimResized * wincmd =
 " augroup END
 
 " --- restore last cursor position when reopening files -----------------------
+
 augroup vim_restore_cursor
 	autocmd!
 	autocmd BufReadPost *
@@ -36,12 +41,14 @@ augroup vim_restore_cursor
 augroup END
 
 " --- automatically detect filetype for environment/config files --------------
+
 augroup vim_filetypes
 	autocmd!
 	autocmd BufNewFile,BufRead .env,.env*,*env set filetype=sh
 augroup END
 
 " --- enable word wrapping and spell check for specific file types ------------
+
 augroup vim_text_wrap_spell
 	autocmd!
 	autocmd FileType text,plaintex,typst,markdown,gitcommit
@@ -49,12 +56,14 @@ augroup vim_text_wrap_spell
 augroup END
 
 " --- disable auto comment continuation on newlines ---------------------------
+
 " augroup vim_disable_auto_comment
 " 	autocmd!
 " 	autocmd FileType * setlocal formatoptions-=cro
 " augroup END
 
 " --- auto reload vimrc automatically on save ---------------------------------
+
 augroup vim_auto_reload_rc
  	autocmd!
  	autocmd BufWritePost $MYVIMRC,~/.vim/config/*.vim
@@ -62,12 +71,14 @@ augroup vim_auto_reload_rc
  augroup END
 
 " --- fix conceallevel for JSON files -----------------------------------------
+
 augroup vim_json_fix
 	autocmd!
 	autocmd FileType json,jsonc,json5 setlocal conceallevel=0
 augroup END
 
 " --- auto-create missing directories on save ---------------------------------
+
 augroup vim_mkdir
 	autocmd!
 	autocmd BufWritePre *
@@ -77,6 +88,7 @@ augroup vim_mkdir
 augroup END
 
 " --- close certain help/info-type windows with 'q' ---------------------------
+
 augroup vim_quick_close
 	autocmd!
 	autocmd FileType PlenaryTestPopup,help,lspinfo,man,notify,qf,query,spectre_panel,startuptime,tsplayground,neotest-output,checkhealth,neotest-summary,neotest-output-panel,gitsigns.blame,fugitive,git
@@ -85,6 +97,7 @@ augroup vim_quick_close
 augroup END
 
 " --- automatically save modified buffers when leaving buffer or losing focus -
+
 augroup vim_autosave
 	autocmd!
 	autocmd BufLeave,FocusLost *
@@ -94,6 +107,7 @@ augroup vim_autosave
 augroup END
 
 " --- automatically format files on save (if tool exists) ---------------------
+
 " function! s:SmartFormat() abort
 " 	if &filetype ==# 'json' && executable('jq')
 " 		silent! %!jq .

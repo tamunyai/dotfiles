@@ -29,27 +29,26 @@ function command_exists() {
 
 # moves up <n> directories, but not above $HOME.
 # usage: up <n>
-function up() {
-	local n=${1:-1}  # default to 1 if no argument given
-	local target="$PWD"
+# function up() {
+# 	local n=${1:-1}  # default to 1 if no argument given
+# 	local target="$PWD"
 
-	# iteratively move "up" one directory at a time.
-  for ((i=1; i<=n; i++)); do
-		local parent
-		parent=$(dirname "$target")
+# 	# iteratively move "up" one directory at a time.
+#   for ((i=1; i<=n; i++)); do
+# 		local parent
+# 		parent=$(dirname "$target")
 
-		# stop if we're at or above $HOME
-    if [[ "$parent" == "$HOME" || "$parent" == "/" ]]; then
-      target="$HOME"
-      break
-    fi
+# 		# stop if we're at or above $HOME
+#     if [[ "$parent" == "$HOME" || "$parent" == "/" ]]; then
+#       target="$HOME"
+#       break
+#     fi
 
-    target="$parent"
-  done
+#     target="$parent"
+#   done
 
-	cd "$target" || return
-	pwd
-}
+# 	cd "$target" || return
+# }
 
 # create a virtual environment in ./venv
 # usage: ve
@@ -89,7 +88,7 @@ function vd() {
 	if [ -n "$VIRTUAL_ENV" ]; then
 		deactivate 2>/dev/null || true
 		unset VIRTUAL_ENV
-		echo "Virtual environment deactivated."
+		echo "vd: virtual environment deactivated."
 
 	else
 		echo "vd: no virtual environment is currently active."
@@ -146,6 +145,12 @@ fi
 # colored GCC warnings and errors
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 # export LESS_TERMCAP_md="${yellow}"
+
+# starship prompt
+if command_exists "starship"; then
+	export STARSHIP_CACHE="${HOME}/.starship/cache"
+	export STARSHIP_CONFIG="${HOME}/.starship/config.toml"
+fi
 
 # --- PROMPT ------------------------------------------------------------------
 
@@ -216,8 +221,8 @@ if command_exists "eza"; then
 	alias sl="eza --color=auto --group-directories-first --icons"
 
 	alias l="eza -alh --color=auto --group-directories-first --icons"
-	alias ll='eza -alh --color=auto --group-directories-first'
-	alias la='eza -a --color=auto --group-directories-first'
+	alias ll='eza -alh --color=auto --group-directories-first --icons'
+	alias la='eza -a --color=auto --group-directories-first --icons'
 	alias tree="eza -a --tree -I '${IGNORE_PATTERN}' -L 1 --group-directories-first --icons"
 
 else
@@ -242,7 +247,7 @@ alias ....='cd ../../..'
 alias mkdir='mkdir -pv'
 
 # prevent accidental deletion or renaming of system-critical files
-alias rm='rm -I --preserve-root'
+alias rm='rm -v -I --preserve-root'
 alias mv='mv -i'
 alias cp='cp -i'
 alias ln='ln -i'

@@ -35,9 +35,6 @@ fi
 
 # starship prompt
 if command_exists "starship"; then
-	export STARSHIP_CACHE="${HOME}/.starship/cache"
-	export STARSHIP_CONFIG="${HOME}/.starship/config.toml"
-
 	eval "$(starship init bash)"
 fi
 
@@ -49,7 +46,3 @@ fi
 # --- CLEANUP -----------------------------------------------------------------
 unset -f command_exists 2>/dev/null
 unset -v color_prompt force_color_prompt debian_chroot 2>/dev/null
-
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
