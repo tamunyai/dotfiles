@@ -27,59 +27,50 @@ function command_exists() {
 	return 1
 }
 
-# moves up <n> directories, but not above $HOME.
-# usage: up <n>
-# function up() {
-# 	local n=${1:-1}  # default to 1 if no argument given
-# 	local target="$PWD"
-
-# 	# iteratively move "up" one directory at a time.
-#   for ((i=1; i<=n; i++)); do
-# 		local parent
-# 		parent=$(dirname "$target")
-
-# 		# stop if we're at or above $HOME
-#     if [[ "$parent" == "$HOME" || "$parent" == "/" ]]; then
-#       target="$HOME"
-#       break
-#     fi
-
-#     target="$parent"
-#   done
-
-# 	cd "$target" || return
-# }
-
-# create a virtual environment in ./venv
-# usage: ve
+# create a virtual environment
+# usage: ve [name] (defaults to .venv)
 function ve() {
+  local venv_name="${1:-.venv}"
+
 	if command_exists "python"; then
-		python -m venv ./venv
+		python -m venv "$venv_name"
 
 	elif command_exists "python3"; then
-		python3 -m venv ./venv
+		python3 -m venv "$venv_name"
 
 	else
 		echo 've: python not found.'
 		return 1
 	fi
+
+  echo "ve: created venv: $venv_name"
 }
 
 # activate a local Python virtual environment
-# usage: va
+# usage: va [name] (defaults to searching for .venv/venv)
 function va() {
-	if [ -f "./venv/bin/activate" ]; then
-		# Linux/macOS
-		source ./venv/bin/activate
+	local venv_name="$1"
+	local dirs=(".venv" "venv")
 
-	elif [ -f "./venv/Scripts/activate" ]; then
-		# Windows Git Bash
-		source ./venv/Scripts/activate
-
-	else
-		echo "va: no virtual environment found. run '\''ve'\'' first."
-		return 1
+	if [ -n "$venv_name" ]; then
+		dirs=("$venv_name")
 	fi
+
+	for dir in "${dirs[@]}"; do
+		if [ -f "./$dir/bin/activate" ]; then
+      # Linux/macOS
+			source "./$dir/bin/activate"
+			return 0
+
+		elif [ -f "./$dir/Scripts/activate" ]; then
+      # Windows Git Bash
+			source "./$dir/Scripts/activate"
+			return 0
+		fi
+	done
+
+	echo "va: no virtual environment found. run 've' first."
+	return 1
 }
 
 # deactivate the current Python virtual environment
