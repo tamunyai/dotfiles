@@ -2,6 +2,11 @@
 #
 # machine-specific or personal overrides
 # this file is sourced *after* ~/.shell/commonrc and not tracked by git.
+#
+# use this file for:
+# - custom PATH additions
+# - work-specific environment variables
+# - api keys and secrets
 
 # --- ENVIRONMENT VARIABLES ---------------------------------------------------
 
