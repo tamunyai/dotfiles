@@ -5,8 +5,9 @@
 
 # --- LOAD SHARED CONFIG ------------------------------------------------------
 
-[ -f "$HOME/.shell/commonrc" ] && source "$HOME/.shell/commonrc"
-[ -f "$HOME/.shell/localrc" ] && source "$HOME/.shell/localrc"
+for file in "commonrc" "localrc"; do
+	[ -f "$HOME/.shell/$file" ] && source "$HOME/.shell/$file"
+done
 
 # --- SAFETY / DEFAULTS -------------------------------------------------------
 
