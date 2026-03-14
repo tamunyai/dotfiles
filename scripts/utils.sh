@@ -126,30 +126,6 @@ function install() {
 	esac
 }
 
-# check if a file should be ignored
-# usage: should_ignore "relative/path/to/file" "ignore1 ignore2 ignore3"
-should_ignore() {
-	local file="$1"
-
-	shift
-	local ignore_list=("$@")
-
-	for ignore in "${ignore_list[@]}"; do
-		# skip empty lines or comments
-		[[ -z "$ignore" || "$ignore" =~ ^# ]] && continue
-
-		# remove trailing slash for comparison
-		ignore="${ignore%/}"
-
-		# match exact or prefix (directory)
-		if [[ "$file" == "$ignore" || "$file" == "$ignore/"* ]]; then
-			return 0  # true: ignore
-		fi
-
-	done
-	return 1  # false: do not ignore
-}
-
 # ensure a file has Unix line endings before sourcing
 # usage: fix_crlf_if_needed <file>
 fix_crlf_if_needed() {

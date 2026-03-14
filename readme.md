@@ -18,10 +18,9 @@ This repository contains my dotfiles for a consistent development setup across v
    ```
 
    This script will:
-
    - Install necessary dependencies (like `zoxide`, `eza`, etc.).
    - Install `nodejs` and `npm` via `nvm` (Node Version Manager).
-   - Link all dotfiles from `home/` to `$HOME`, skipping any files or directories listed in `.dotignore`.
+   - Link all dotfiles from `home/` to `$HOME`.
    - Automatically back up existing files in `$HOME` that would be overwritten by symlinks with a `.bak` extension.
 
 3. **Install Fonts for Better Rendering (Optional)**
@@ -34,7 +33,6 @@ This repository contains my dotfiles for a consistent development setup across v
    ```
 
    This script will:
-
    - Detect your operating system and set the correct font directory.
    - Download and install Nerd Fonts (e.g., JetBrains Mono).
 
@@ -46,28 +44,7 @@ This repository contains my dotfiles for a consistent development setup across v
    ```
 
    This script will:
-
    - Configure Git credentials and SSH keys for your environment.
-
-## Ignore List
-
-You can define files or directories that should be excluded from symlinking by creating a `.dotignore` file in the root of the repository (`~/.dotfiles/.dotignore`).
-
-- Paths should be relative to `home/`.
-- Example `.dotignore`:
-
-```sh
-# ignore directories
-.config/
-scripts/
-
-# ignore files
-.zshrc
-readme.md
-```
-
-- Blank lines and lines starting with `#` are ignored.
-- The bootstrap script will automatically skip any paths listed here.
 
 ## Customization
 

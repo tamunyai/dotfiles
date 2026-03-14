@@ -126,15 +126,6 @@ fi
 info "Linking all dotfiles from $DOTFILES_DIR to $HOME..."
 
 SOURCE_DIR="$DOTFILES_DIR/home"
-IGNORE_FILE="$DOTFILES_DIR/.dotignore"
-
-# read ignore list from file (ignore blank/comment lines)
-if [[ -f "$IGNORE_FILE" ]]; then
-	mapfile -t IGNORE_LIST < <(grep -vE '^\s*(#|$)' "$IGNORE_FILE" | sed 's/\r$//')
-
-else
-	IGNORE_LIST=()
-fi
 
 # recursively find all files in DOTFILES_DIR/home
 find "$SOURCE_DIR" -type f | while read -r src_path; do
@@ -143,9 +134,6 @@ find "$SOURCE_DIR" -type f | while read -r src_path; do
 
 	# compute the relative path from DOTFILES_DIR
 	rel_path="${src_path#$SOURCE_DIR/}"
-
-	# skip ignored files
-	should_ignore "$rel_path" "${IGNORE_LIST[@]}" && continue
 
 	# ensure the destination directory exists
 	dest_path="$HOME/$rel_path"
