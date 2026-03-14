@@ -1,0 +1,88 @@
+[alias]
+
+  # show verbose output about tags, branches or remotes
+	tags = tag -l
+	branches = branch --all
+	remotes = remote --verbose
+
+  # list aliases.
+	aliases = config --get-regexp alias
+
+  # list contributors with number of commits.
+	contributors = shortlog --summary --numbered
+
+  # show the user email for the current repository.
+	whoami = config user.email
+
+[user]
+
+	name = tamunyai
+	email = 60216128+tamunyai@users.noreply.github.com
+
+[branch]
+
+	# show most recently changed branches first.
+	sort = -committerdate
+
+[core]
+
+	# use custom `.gitignore` and `.gitattributes`.
+	excludesfile = ~/.config/git/ignore
+	attributesfile = ~/.config/git/attributes
+
+	# speed up commands involving untracked files such as `git status`.
+	# https://git-scm.com/docs/git-update-index#_untracked_cache
+	untrackedCache = true
+
+[color]
+
+  # use colors in Git commands that are capable of colored output when
+	# outputting to the terminal. (This is the default setting in Git ≥ 1.8.4.)
+	ui = auto
+
+[color "branch"]
+
+	current = green bold
+	local = green
+	remote = cyan
+
+[color "status"]
+
+	added = green
+	changed = yellow bold
+	untracked = red
+
+[color "diff"]
+
+	meta = yellow bold
+	frag = magenta bold  # line info
+	old = red            # deletions
+	new = green          # additions
+
+[commit]
+
+  template = ~/.config/git/message
+
+[pull]
+
+  rebase = false
+
+[help]
+
+	# automatically correct and execute mistyped commands.
+	autocorrect = 1
+
+[merge]
+
+	# include summaries of merged commits in newly created merge commit messages
+	log = true
+
+[push]
+
+  # make `git push` push relevant annotated tags when pushing branches out.
+  followTags = true
+	default = current
+
+[init]
+
+	defaultBranch = main

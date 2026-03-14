@@ -3,19 +3,24 @@
 # bash-specific configuration
 # executed by bash(1) for non-login shells.
 
-# --- LOAD SHARED CONFIG ------------------------------------------------------
-
-for file in "commonrc" "localrc"; do
-	[ -f "$HOME/.shell/$file" ] && source "$HOME/.shell/$file"
-done
-
-# --- SAFETY / DEFAULTS -------------------------------------------------------
+# --- INTERACTIVE CHECK -------------------------------------------------------
 
 # if not running interactively, don't do anything
 case $- in
 	*i*) ;;
 		*) return;;
 esac
+
+# --- LOAD SHARED CONFIG ------------------------------------------------------
+
+for file in $HOME/.config/shell/{functions,exports,aliases,integrations}; do
+	[ -r "$file" ] && [ -f "$file" ] && source "$file"
+done
+unset file
+
+[ -f "$HOME/.localrc" ] && source "$HOME/.localrc"
+
+# --- DEFAULTS ----------------------------------------------------------------
 
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
@@ -32,17 +37,27 @@ if ! shopt -oq posix; then
   fi
 fi
 
-# --- EXTRAS ------------------------------------------------------------------
+# --- HISTORY -----------------------------------------------------------------
 
-# starship prompt
-if command_exists "starship"; then
-	eval "$(starship init bash)"
-fi
+# append to the history file, don't overwrite it
+shopt -s histappend 2>/dev/null || true
 
-# zoxide (smart `cd` replacement) for faster navigation
-if command_exists "zoxide"; then
-	eval "$(zoxide init --cmd cd bash)"
-fi
+# save and reload history after each command finishes
+export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
+
+# check the window size after each command and, if necessary,
+# update the values of LINES and COLUMNS.
+shopt -s checkwinsize 2>/dev/null || true
+
+# if set, the pattern "**" used in a pathname expansion context will
+# match all files and zero or more directories and subdirectories.
+#shopt -s globstar 2>/dev/null || true
+
+# auto-correct minor typos in 'cd' commands
+shopt -s cdspell 2>/dev/null || true
+
+# make filename globbing case-insensitive
+shopt -s nocaseglob 2>/dev/null || true
 
 # --- CLEANUP -----------------------------------------------------------------
 unset -f command_exists 2>/dev/null

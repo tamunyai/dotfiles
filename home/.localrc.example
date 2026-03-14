@@ -1,7 +1,6 @@
-# ~/.shell/localrc
+# ~/.localrc
 #
-# machine-specific or personal overrides
-# this file is sourced *after* ~/.shell/commonrc and not tracked by git.
+# machine-specific or personal overrides (not tracked by Git).
 #
 # use this file for:
 # - custom PATH additions

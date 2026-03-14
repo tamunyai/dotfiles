@@ -1,19 +1,23 @@
-localrc
-.shell/plugins
+# local configuration (not committed)
+.localrc
+
+# shell plugins (installed at runtime by .zshrc)
+.config/shell/plugins/
 
 # OS-specific files
 .DS_Store
 Thumbs.db
 desktop.ini
-*.swp
-*.swo
 
 # backup files
 *~
 *.bak
+*.bak.*
 *.tmp
 *.old
 *.orig
+*.swp
+*.swo
 
 # editor-specific
 .vim/plugins
@@ -25,7 +29,7 @@ desktop.ini
 *.sublime-project
 
 # shell history & credentials
-.shell/history
+.history
 .bash_history
 .zsh_history
 .zsh_sessions/
@@ -46,7 +50,6 @@ desktop.ini
 *.pem
 
 # cache directories
-.starship/cache
 .cache/
 .local/
 .npm/
@@ -54,15 +57,18 @@ desktop.ini
 .m2/
 .cargo/
 .rustup/
+
+# version manager state files
 .python-version
 .pyenv/
 .rbenv-version
 .ruby-version
+mise.lock
+.mise.toml
 
 # macOS and Linux trash
 .Trash-*
 .Trash/
-*.lock
 
 # logs
 *.log

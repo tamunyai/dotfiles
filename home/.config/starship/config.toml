@@ -1,0 +1,216 @@
+# get editor completions based on the config schema
+"$schema" = 'https://starship.rs/config-schema.json'
+
+format = """
+  ▲ 👟 \
+  $username\
+  $hostname\
+  $localip\
+  $shlvl\
+  $singularity\
+  $kubernetes\
+  $directory\
+  $vcsh\
+  $fossil_branch\
+  $fossil_metrics\
+  $git_branch\
+  $git_commit\
+  $git_state\
+  $git_metrics\
+  $git_status\
+  $hg_branch\
+  $hg_state\
+  $pijul_channel\
+  $docker_context\
+  $fill\
+  $package\
+  $c\
+  $cmake\
+  $cobol\
+  $daml\
+  $dart\
+  $deno\
+  $dotnet\
+  $elixir\
+  $elm\
+  $erlang\
+  $fennel\
+  $fortran\
+  $gleam\
+  $golang\
+  $guix_shell\
+  $haskell\
+  $haxe\
+  $helm\
+  $java\
+  $julia\
+  $kotlin\
+  $gradle\
+  $lua\
+  $nim\
+  $nodejs\
+  $ocaml\
+  $opa\
+  $perl\
+  $php\
+  $pulumi\
+  $purescript\
+  $python\
+  $quarto\
+  $raku\
+  $rlang\
+  $red\
+  $ruby\
+  $rust\
+  $scala\
+  $solidity\
+  $swift\
+  $terraform\
+  $typst\
+  $vlang\
+  $vagrant\
+  $zig\
+  $buf\
+  $nix_shell\
+  $conda\
+  $meson\
+  $spack\
+  $memory_usage\
+  $aws\
+  $gcloud\
+  $openstack\
+  $azure\
+  $nats\
+  $direnv\
+  $env_var\
+  $mise\
+  $crystal\
+  $custom\
+  $sudo\
+  $cmd_duration\
+  $line_break\
+  $jobs\
+  $battery\
+  $time\
+  $status\
+  $os\
+  $container\
+  $netns\
+  $shell\
+  $character
+"""
+
+[kubernetes]
+
+  disabled = true
+
+[directory]
+
+  truncation_length = 1
+  truncate_to_repo = true
+  style = "bold blue"
+
+[git_branch]
+
+  symbol = '🌱 '
+  format = 'on [$symbol$branch]($style)'
+  truncation_length = 4
+  truncation_symbol = ''
+  style = 'green'
+
+[git_commit]
+
+  commit_hash_length = 4
+  tag_symbol = '🔖 '
+
+[git_status]
+
+  format = '([ \( $all_status$ahead_behind\)]($style) )'
+  conflicted = '[ confliced=${count}](red) '
+  up_to_date = '[󰘽 up-to-date](green) '
+  untracked = '[󰋗 untracked=${count}](red) '
+  ahead = ' ahead=${count}'
+  diverged = ' ahead=${ahead_count}  behind=${behind_count}'
+  behind = ' behind=${count}'
+  stashed = '[ stashed=${count}](green) '
+  modified = '[󰛿 modified=${count}](yellow) '
+  staged = '[󰐗 staged=${count}](green) '
+  renamed = '[󱍸 renamed=${count}](yellow) '
+  deleted = '[󰍶 deleted=${count}](red) '
+  style = 'bold green'
+
+[docker_context]
+
+  symbol = '🐳 '
+  disabled = true
+
+[fill]
+
+  symbol = ' '
+
+[package]
+
+  symbol = '📦 '
+    disabled = true
+
+[lua]
+
+  disabled = true
+
+[nodejs]
+
+  disabled = true
+
+[python]
+
+  # show only when a virtual environment is active.
+  format = '[$virtualenv]($style) '
+  version_format = ''
+
+  # avoid detecting random Python files in directories
+  detect_extensions = []
+  detect_files = []
+
+[aws]
+
+  disabled = true
+
+[gcloud]
+
+  disabled = true
+
+[mise]
+
+  symbol = '🔧 '
+  format = '[mise:$version]($style) '
+  style = 'dimmed'
+
+[cmd_duration]
+
+  format = '[took $duration]($style) '
+  style = 'bold yellow'
+  min_time = 2_000                     # only show duration for commands longer than 2 seconds
+
+[line_break]
+
+  disabled = false
+
+[character]
+
+  format = ' '
+
+[palettes.onedark]
+
+  dark_blue = '#61afef'
+  blue = '#56b6c2'
+  red = '#e06c75'
+  green = '#98c379'
+  purple = '#c678dd'
+  cyan = '#56b6c2'
+  orange = '#be5046'
+  yellow = '#e5c07b'
+  gray = '#828997'
+  white = '#abb2bf'
+  black = '#2c323c'
+
+palette = "onedark"

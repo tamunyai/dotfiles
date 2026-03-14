@@ -1,0 +1,24 @@
+[tools]
+
+  node = "24.14.0"    # lts
+  python = "3.14.2"
+  fzf = "0.70.0"
+  neovim = "stable"
+  zoxide = "0.9.9"
+  eza = "0.23.4"
+  starship = "1.24.2"
+
+[settings]
+
+  # tools can read the versions files used by other version managers
+  # for example, .nvmrc in the case of node's nvm
+  idiomatic_version_file_enable_tools = ['node', 'python']
+
+  # set to true to see full installation output, see `MISE_VERBOSE`
+  verbose = false
+
+  # set the timeout for http requests as duration string, see `MISE_HTTP_TIMEOUT`
+  http_timeout = "30s"
+
+  # number of plugins or runtimes to install in parallel. The default is `4`.
+  jobs = 4

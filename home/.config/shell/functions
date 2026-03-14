@@ -1,0 +1,75 @@
+#
+# shell functions
+
+# checks if a command is available in the system.
+# usage: command_exists <command_name>
+function command_exists() {
+	local cmd="$1"
+
+  if command -v "$cmd" >/dev/null 2>&1; then
+    return 0
+  fi
+
+  return 1
+}
+
+# create a virtual environment
+# usage: ve [name] (defaults to .venv)
+function ve() {
+  local venv_name="${1:-.venv}"
+
+  if [ -d "$venv_name" ]; then
+    echo "ve: '$venv_name' already exists."
+    return 1
+  fi
+
+	if command_exists "python"; then
+		python -m venv "$venv_name"
+
+	elif command_exists "python3"; then
+		python3 -m venv "$venv_name"
+
+	else
+		echo 've: python not found.'
+		return 1
+	fi
+
+  echo "ve: created venv: $venv_name"
+}
+
+# activate a local Python virtual environment
+# usage: va [name] (defaults to searching for .venv/venv)
+function va() {
+	local venv_name="$1"
+	local dirs=(".venv" "venv")
+
+	if [ -n "$venv_name" ]; then
+		dirs=("$venv_name")
+	fi
+
+	for dir in "${dirs[@]}"; do
+    for path in "./$dir/bin/activate" "./$dir/Scripts/activate"; do
+      if [ -f "$path" ]; then
+        source "$path"
+        return 0
+      fi
+    done
+	done
+
+	echo "va: no virtual environment found. run 've' first."
+	return 1
+}
+
+# deactivate the current Python virtual environment
+# usage: vd
+function vd() {
+	if [ -n "$VIRTUAL_ENV" ]; then
+		deactivate 2>/dev/null || true
+		unset VIRTUAL_ENV
+		echo "vd: virtual environment deactivated."
+
+	else
+		echo "vd: no virtual environment is currently active."
+		return 1
+	fi
+}

@@ -4,9 +4,12 @@
 
 # --- LOAD SHARED CONFIG ------------------------------------------------------
 
-for file in "commonrc" "localrc"; do
-	[ -f "$HOME/.shell/$file" ] && source "$HOME/.shell/$file"
+for file in $HOME/.config/shell/{functions,exports,aliases,integrations}; do
+	[ -r "$file" ] && [ -f "$file" ] && source "$file"
 done
+unset file
+
+[ -f "$HOME/.localrc" ] && source "$HOME/.localrc"
 
 # --- PLUGINS SETUP -----------------------------------------------------------
 
@@ -21,26 +24,16 @@ plugins=(
 
 # install and source plugins
 for plugin in "${plugins[@]}"; do
-	components=(${(s:/:)plugin})
-	github_user=$components[1]
-	plugin_name=$components[2]
-	install_dir="$HOME/.shell/plugins/$plugin_name"
-	repo_url="https://github.com/$github_user/$plugin_name.git"
+  plugin_name="${plugin#*/}"
+	install_dir="$HOME/.config/shell/plugins/$plugin_name"
 
 	if [ ! -d "$install_dir" ]; then
-		git clone "$repo_url" "$install_dir"
+		git clone "https://github.com/$plugin.git" "$install_dir"
 	fi
 
 	# source plugin
 	source "$install_dir/$plugin_name.plugin.zsh"
 done
-
-# --- ENVIRONMENT VARIABLES ---------------------------------------------------
-
-# update FPATH to include completions
-if command_exists "eza"; then
-	export FPATH="$HOME/.eza/completions/zsh:$FPATH"
-fi
 
 # --- HISTORY -----------------------------------------------------------------
 
@@ -61,25 +54,6 @@ setopt hist_reduce_blanks 		# remove superfluous blanks before saving history.
 bindkey -e                           # use Emacs-style key bindings.
 bindkey '^p' history-search-backward # bind Ctrl+P for backward search through history.
 bindkey '^n' history-search-forward  # bind Ctrl+N for forward search through history.
-
-# --- ENVIRONMENT VARIABLES ---------------------------------------------------
-
-if command_exists "nvim"; then
-	export EDITOR='nvim'
-	export VISUAL="$EDITOR"
-fi
-
-# --- EXTRAS ------------------------------------------------------------------
-
-# starship prompt
-if command_exists "starship"; then
-	eval "$(starship init zsh)"
-fi
-
-# zoxide (smart `cd` replacement) for faster navigation
-if command_exists "zoxide"; then
-	eval "$(zoxide init --cmd cd zsh)"
-fi
 
 # --- CLEANUP -----------------------------------------------------------------
 unset -f command_exists 2>/dev/null

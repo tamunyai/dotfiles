@@ -1,0 +1,20 @@
+#
+# integrations with external tools and programs.
+
+shell="bash"
+[ -n "$ZSH_VERSION" ] && shell="zsh"
+
+# starship prompt
+if command_exists "starship"; then
+  eval "$(starship init $shell)"
+fi
+
+# zoxide (smart `cd` replacement) for faster navigation
+if command_exists "zoxide"; then
+  eval "$(zoxide init --cmd cd $shell)"
+fi
+
+# mise (universal language manager)
+if command_exists "mise"; then
+  eval "$(mise activate $shell)"
+fi
