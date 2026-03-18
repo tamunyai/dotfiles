@@ -33,7 +33,7 @@ if [ "$platform" != "Git Bash" ]; then
   fi
 
   # install `mise` for universal language management
-  if ! command_exists "mise"; then
+  if ! command -v "mise" /dev/null 2>&1; then
     mise_url="https://mise.run"
 
     info "Installing mise (universal language manager)..."
@@ -49,7 +49,7 @@ else
   mkdir -p "$LOCAL_BIN" || fail "Failed to create $LOCAL_BIN"
 
   # install `zoxide`, a smarter `cd` command
-  if ! command_exists "zoxide"; then
+  if ! command -v "zoxide" /dev/null 2>&1; then
     zoxide_url="https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh"
 
     info "Installing zoxide (smarter cd command)..."
@@ -58,7 +58,7 @@ else
   fi
 
   # install `starship` prompt
-  if ! command_exists "starship"; then
+  if ! command -v "starship" /dev/null 2>&1; then
     starship_url="https://starship.rs/install.sh"
 
     info "Installing Starship prompt..."

@@ -33,18 +33,6 @@ function fail() {
   exit 1
 }
 
-# checks if a command is available in the system.
-# usage: command_exists <command_name>
-function command_exists() {
-  local cmd="$1"
-
-  if command -v "$cmd" >/dev/null 2>&1; then
-    return 0
-  fi
-
-  return 1
-}
-
 # detect platform (Linux | macOS | Git Bash)
 # usage: detect_platform
 function detect_platform() {
@@ -62,7 +50,7 @@ function install() {
   local package=$1
   local platform=$2
 
-  if command_exists "$package"; then
+  if command -v "$package" /dev/null 2>&1; then
     success "$package already installed."
     return 0
   fi
@@ -71,23 +59,23 @@ function install() {
 
   case "$platform" in
     Linux)
-      if command_exists apt-get; then
+      if command -v "apt-get" /dev/null 2>&1; then
         sudo apt-get update -y
         sudo apt-get install -y "$package"
 
-      # elif command_exists dnf; then
+      # elif command -v "dnf" /dev/null 2>&1; then
       # 	sudo dnf makecache -y
       # 	sudo dnf install -y "$package"
 
-      # elif command_exists yum; then
+      # elif command -v "yum" /dev/null 2>&1; then
       # 	sudo yum makecache -y
       # 	sudo yum install -y "$package"
 
-      # elif command_exists pacman; then
+      # elif command -v "pacman" /dev/null 2>&1; then
       # 	sudo pacman -Sy --noconfirm
       # 	sudo pacman -S --noconfirm "$package"
 
-      # elif command_exists zypper; then
+      # elif command -v "zypper" /dev/null 2>&1; then
       # 	sudo zypper refresh
       # 	sudo zypper install -y "$package"
 
@@ -97,7 +85,7 @@ function install() {
       ;;
 
     macOS)
-      if command_exists brew; then
+      if command -v "brew" /dev/null 2>&1; then
         brew install "$package"
 
       else

@@ -1,7 +1,7 @@
 #
 # environment variables and standard paths
 
-if command_exists "nvim"; then
+if command -v "nvim" /dev/null 2>&1; then
 	export EDITOR='nvim'
 
 else
@@ -17,7 +17,7 @@ export BASH_SILENCE_DEPRECATION_WARNING=1
 export PATH="$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH"
 
 # update FPATH to include completions
-if command_exists "eza"; then
+if command -v "eza" /dev/null 2>&1; then
 	export FPATH="$HOME/.eza/completions/zsh:$FPATH"
 fi
 
@@ -31,7 +31,7 @@ export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quo
 # export LESS_TERMCAP_md="${yellow}"
 
 # starship prompt
-if command_exists "starship"; then
+if command -v "starship" /dev/null 2>&1; then
 	export STARSHIP_CONFIG="$HOME/.config/starship/config.toml"
 fi
 

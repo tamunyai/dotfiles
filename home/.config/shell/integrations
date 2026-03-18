@@ -5,16 +5,16 @@ shell="bash"
 [ -n "$ZSH_VERSION" ] && shell="zsh"
 
 # starship prompt
-if command_exists "starship"; then
+if command -v "starship" /dev/null 2>&1; then
   eval "$(starship init $shell)"
 fi
 
 # zoxide (smart `cd` replacement) for faster navigation
-if command_exists "zoxide"; then
+if command -v "zoxide" /dev/null 2>&1; then
   eval "$(zoxide init --cmd cd $shell)"
 fi
 
 # mise (universal language manager)
-if command_exists "mise"; then
+if command -v "mise" /dev/null 2>&1; then
   eval "$(mise activate $shell)"
 fi

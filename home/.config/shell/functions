@@ -1,20 +1,8 @@
 #
 # shell functions
 
-# checks if a command is available in the system.
-# usage: command_exists <command_name>
-function command_exists() {
-	local cmd="$1"
-
-  if command -v "$cmd" >/dev/null 2>&1; then
-    return 0
-  fi
-
-  return 1
-}
-
 # create a virtual environment
-# usage: ve [name] (defaults to .venv)
+# usage: ve <name> (defaults to .venv)
 function ve() {
   local venv_name="${1:-.venv}"
 
@@ -23,10 +11,10 @@ function ve() {
     return 1
   fi
 
-	if command_exists "python"; then
+	if command -v "python" /dev/null 2>&1; then
 		python -m venv "$venv_name"
 
-	elif command_exists "python3"; then
+	elif command -v "python3" /dev/null 2>&1; then
 		python3 -m venv "$venv_name"
 
 	else
@@ -38,7 +26,7 @@ function ve() {
 }
 
 # activate a local Python virtual environment
-# usage: va [name] (defaults to searching for .venv/venv)
+# usage: va <name> (defaults to searching for .venv/venv)
 function va() {
 	local venv_name="$1"
 	local dirs=(".venv" "venv")
