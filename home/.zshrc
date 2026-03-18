@@ -72,14 +72,22 @@ if command -v "eza" >/dev/null 2>&1; then
   zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'eza --tree -L 1 --group-directories-first --icons "$realpath"'
 
 else
-  zstyle ':fzf-tab:complete:cd:*' fzf-preview "ls --color=always $realpath"
-  zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview "ls --color=always $realpath"
+  zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color=always "$realpath"'
+  zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color=always "$realpath"'
 fi
 
 # bat colorize --help and -h output for all commands.
 if command -v "bat" >/dev/null 2>&1; then
   alias -g -- -h='-h 2>&1 | bat --style=plain --language=help'
   alias -g -- --help='--help 2>&1 | bat --style=plain --language=help'
+
+  # if eza is also available, use it as fallback for directories in the general preview
+  if command -v "eza" >/dev/null 2>&1; then
+    zstyle ':fzf-tab:complete:*' fzf-preview '[[ -f $realpath ]] && bat --color=always --style=numbers --line-range=:500 $realpath || eza --tree -L 1 --group-directories-first --icons "$realpath"'
+
+  else
+    zstyle ':fzf-tab:complete:*' fzf-preview '[[ -f $realpath ]] && bat --color=always --style=numbers --line-range=:500 $realpath'
+  fi
 fi
 
 # --- LOCAL OVERRIDES ---------------------------------------------------------
