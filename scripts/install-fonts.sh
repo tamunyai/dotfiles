@@ -71,7 +71,7 @@ info "Detected platform: $platform"
 
 # set destination font directory
 if [ "$platform" = "Linux" ]; then
-  if [ -n "$WSL_DISTRO_NAME" ]; then
+  if [ -n "${WSL_DISTRO_NAME:-}" ]; then
     WINDOWS_HOME="$(wslpath "$(cmd.exe /C 'echo %USERPROFILE%' 2>/dev/null | tr -d '\r')")"
     DEST_FONTS_DIR="$WINDOWS_HOME/Downloads"
 

@@ -17,7 +17,7 @@ info "checking for SSH key..."
 # check if SSH key exists
 # usage: ./setup-git-sh.sh <github_email>
 if [ ! -f "$HOME/.ssh/id_ed25519" ]; then
-  github_email=$1
+  github_email="${1:-}"
 
   if [ -z "$github_email" ]; then
     user "Enter your GitHub email address: "
