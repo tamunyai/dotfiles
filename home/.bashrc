@@ -13,12 +13,12 @@ esac
 
 # --- LOAD SHARED CONFIG ------------------------------------------------------
 
-for file in $HOME/.config/shell/{functions,exports,aliases,extras}; do
+SHELL_CONFIG_DIR="$HOME/.config/shell"
+
+for file in $SHELL_CONFIG_DIR/{functions,exports,aliases,extras}; do
 	[ -r "$file" ] && [ -f "$file" ] && source "$file"
 done
 unset file
-
-[ -f "$HOME/.localrc" ] && source "$HOME/.localrc"
 
 # --- DEFAULTS ----------------------------------------------------------------
 
@@ -59,6 +59,8 @@ shopt -s cdspell 2>/dev/null || true
 # make filename globbing case-insensitive
 shopt -s nocaseglob 2>/dev/null || true
 
-# --- CLEANUP -----------------------------------------------------------------
-unset -f command_exists 2>/dev/null
-unset -v color_prompt force_color_prompt debian_chroot 2>/dev/null
+# --- LOCAL OVERRIDES ---------------------------------------------------------
+
+if [ -f "$SHELL_CONFIG_DIR/localrc" ]; then
+  source "$SHELL_CONFIG_DIR/localrc"
+fi

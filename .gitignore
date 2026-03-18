@@ -1,5 +1,5 @@
 # local configuration (not committed)
-.localrc
+home/.config/shell/localrc
 
 # shell plugins (installed at runtime by .zshrc)
 .config/shell/plugins/

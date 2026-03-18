@@ -4,12 +4,12 @@
 
 # --- LOAD SHARED CONFIG ------------------------------------------------------
 
-for file in $HOME/.config/shell/{functions,exports,aliases,extras}; do
+SHELL_CONFIG_DIR="$HOME/.config/shell"
+
+for file in $SHELL_CONFIG_DIR/{functions,exports,aliases,extras}; do
 	[ -r "$file" ] && [ -f "$file" ] && source "$file"
 done
 unset file
-
-[ -f "$HOME/.localrc" ] && source "$HOME/.localrc"
 
 # --- PLUGINS SETUP -----------------------------------------------------------
 
@@ -55,5 +55,8 @@ bindkey -e                           # use Emacs-style key bindings.
 bindkey '^p' history-search-backward # bind Ctrl+P for backward search through history.
 bindkey '^n' history-search-forward  # bind Ctrl+N for forward search through history.
 
-# --- CLEANUP -----------------------------------------------------------------
-unset -f command_exists 2>/dev/null
+# --- LOCAL OVERRIDES ---------------------------------------------------------
+
+if [ -f "$SHELL_CONFIG_DIR/localrc" ]; then
+  source "$SHELL_CONFIG_DIR/localrc"
+fi

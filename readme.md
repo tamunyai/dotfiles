@@ -44,13 +44,13 @@ This repository contains my dotfiles for a consistent development setup across v
 
 ## Customization
 
-Do not edit tracked config files for machine-specific settings. Instead:
+Do not edit tracked config files for machine-specific settings. Instead, create or edit:
 
 ```bash
-cp ~/.localrc.example ~/.localrc
+~/.config/shell/localrc
 ```
 
-`.localrc` is sourced last by both Bash and Zsh. Use it for secrets, machine-specific env vars, personal aliases, and local overrides. It is **not committed to this repository**.
+This file is sourced last by both Bash and Zsh. Use it for secrets, machine-specific env vars, personal aliases, and local overrides. It is **not committed to this repository**.
 
 ## License
 
