@@ -5,8 +5,6 @@
 
 # --- EXPORTS -----------------------------------------------------------------
 
-# export EDITOR='nvim'
-
 # standard paths.
 # export PATH="$HOME/dev/scripts:$PATH"
 

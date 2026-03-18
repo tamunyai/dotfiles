@@ -87,9 +87,22 @@ fi
 
 # --- DOTFILES SYMLINKING -----------------------------------------------------
 
-info "Linking all dotfiles from $DOTFILES_DIR to $HOME..."
+info "Handling example configuration files..."
 
 SOURCE_DIR="$DOTFILES_DIR/home"
+
+# find all .example files and create the real ones if they don't exist
+find "$SOURCE_DIR" -type f -name "*.example" | while read -r example_path; do
+  target_path="${example_path%.example}"
+
+  if [ ! -f "$target_path" ]; then
+    info "Creating '$(basename "$target_path")' from example..."
+    cp "$example_path" "$target_path"
+    success "Created '$target_path'"
+  fi
+done
+
+info "Linking all dotfiles from $DOTFILES_DIR to $HOME..."
 
 # recursively find all files in DOTFILES_DIR/home
 find "$SOURCE_DIR" -type f | while read -r src_path; do
