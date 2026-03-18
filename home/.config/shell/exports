@@ -1,5 +1,6 @@
+# ~/.config/shell/exports
 #
-# environment variables and standard paths
+# environment variables and standard paths.
 
 if command -v "nvim" /dev/null 2>&1; then
 	export EDITOR='nvim'

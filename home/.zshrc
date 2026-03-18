@@ -4,7 +4,7 @@
 
 # --- LOAD SHARED CONFIG ------------------------------------------------------
 
-for file in $HOME/.config/shell/{functions,exports,aliases,integrations}; do
+for file in $HOME/.config/shell/{functions,exports,aliases,extras}; do
 	[ -r "$file" ] && [ -f "$file" ] && source "$file"
 done
 unset file

@@ -1,5 +1,6 @@
+# ~/.config/shell/functions
 #
-# shell functions
+# shell functions.
 
 # create a virtual environment
 # usage: ve <name> (defaults to .venv)
