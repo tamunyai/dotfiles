@@ -19,3 +19,10 @@ fi
 if command -v "zoxide" /dev/null 2>&1; then
   eval "$(zoxide init --cmd cd $shell)"
 fi
+
+# bat
+if command -v "bat" >/dev/null 2>&1; then
+	alias cat='bat'
+
+  export MANPAGER="bat -plman"
+fi
