@@ -12,10 +12,10 @@ function ve() {
     return 1
   fi
 
-	if command -v "python" /dev/null 2>&1; then
+	if command -v "python" >/dev/null 2>&1; then
 		python -m venv "$venv_name"
 
-	elif command -v "python3" /dev/null 2>&1; then
+	elif command -v "python3" >/dev/null 2>&1; then
 		python3 -m venv "$venv_name"
 
 	else
@@ -60,5 +60,37 @@ function vd() {
 	else
 		echo "vd: no virtual environment is currently active."
 		return 1
+	fi
+}
+
+# show help for a command using bat or less
+# usage: help <command>
+function help() {
+	# check if no arguments were passed
+	if [ $# -eq 0 ]; then
+		echo "usage: help <command>"
+		return 1
+	fi
+
+  cmd="$1"
+
+	# check if the command exists
+	if ! command -v "$cmd" >/dev/null 2>&1; then
+		echo "help: command not found: $cmd"
+		return 1
+	fi
+
+  # determine whether to use --help or -h
+  flag="--help"
+  if "$cmd" -h >/dev/null 2>&1; then
+    flag="-h"
+  fi
+
+	# run the command with --help and pipe to bat or less
+	if command -v "bat" >/dev/null 2>&1; then
+		"$@" $flag 2>&1 | bat --plain --language=help
+
+	else
+		"$@" $flag 2>&1 | less -R --use-color -Dd+r -Du+b
 	fi
 }

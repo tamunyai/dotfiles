@@ -126,7 +126,7 @@ case "$platform" in
       # remove unnecessary files and update font cache on Linux
       find "$DEST_FONTS_DIR" -name '*Windows Compatible*' -delete
 
-      if command -v "fc-cache" /dev/null 2>&1; then
+      if command -v "fc-cache" >/dev/null 2>&1; then
         info "Updating font cache..."
         fc-cache -fv "$DEST_FONTS_DIR"
       fi

@@ -11,29 +11,38 @@ for file in $SHELL_CONFIG_DIR/{functions,exports,aliases,extras}; do
 done
 unset file
 
-# --- PLUGINS SETUP -----------------------------------------------------------
+# --- PLUGINS -----------------------------------------------------------------
 
-# array of user-plugin_name pairs
-plugins=(
-	"zsh-users/zsh-syntax-highlighting"
-	"zsh-users/zsh-autosuggestions"
-	"zsh-users/zsh-history-substring-search"
-	"MichaelAquilina/zsh-you-should-use"
-	"Aloxaf/fzf-tab"
-)
+ZINIT_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/zinit/zinit.git"
 
-# install and source plugins
-for plugin in "${plugins[@]}"; do
-  plugin_name="${plugin#*/}"
-	install_dir="$HOME/.config/shell/plugins/$plugin_name"
+# install zinit (light-weight plugin manager) if it's not present
+if [ ! -d "$ZINIT_HOME" ]; then
+  mkdir -p "$(dirname "$ZINIT_HOME")"
+  git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
+fi
 
-	if [ ! -d "$install_dir" ]; then
-		git clone "https://github.com/$plugin.git" "$install_dir"
-	fi
+source "$ZINIT_HOME/zinit.zsh"
 
-	# source plugin
-	source "$install_dir/$plugin_name.plugin.zsh"
-done
+# load plugins
+zinit light zsh-users/zsh-syntax-highlighting
+zinit light zsh-users/zsh-history-substring-search
+zinit light zsh-users/zsh-completions
+zinit light zsh-users/zsh-autosuggestions
+zinit light MichaelAquilina/zsh-you-should-use       # suggests better aliases
+zinit light Aloxaf/fzf-tab                           # use fzf for completions
+
+# add plugin snippets from Oh My Zsh
+zinit snippet OMZP::git
+
+# initialize completions
+autoload -U compinit && compinit
+zinit cdreplay -q
+
+# --- COMPLETION SETTINGS -----------------------------------------------------
+
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'  # case-insensitive matching
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}" # use LS_COLORS in completions
+zstyle ':completion:*' menu no                          # use fzf-tab instead of the default menu
 
 # --- HISTORY -----------------------------------------------------------------
 
@@ -54,6 +63,24 @@ setopt hist_reduce_blanks 		# remove superfluous blanks before saving history.
 bindkey -e                           # use Emacs-style key bindings.
 bindkey '^p' history-search-backward # bind Ctrl+P for backward search through history.
 bindkey '^n' history-search-forward  # bind Ctrl+N for forward search through history.
+
+# --- EXTRAS ------------------------------------------------------------------
+
+# eza + fzf-tab integration
+if command -v "eza" >/dev/null 2>&1; then
+  zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza --tree -L 1 --group-directories-first --icons "$realpath"'
+  zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'eza --tree -L 1 --group-directories-first --icons "$realpath"'
+
+else
+  zstyle ':fzf-tab:complete:cd:*' fzf-preview "ls --color=always $realpath"
+  zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview "ls --color=always $realpath"
+fi
+
+# bat colorize --help and -h output for all commands.
+if command -v "bat" >/dev/null 2>&1; then
+  alias -g -- -h='-h 2>&1 | bat --style=plain --language=help'
+  alias -g -- --help='--help 2>&1 | bat --style=plain --language=help'
+fi
 
 # --- LOCAL OVERRIDES ---------------------------------------------------------
 

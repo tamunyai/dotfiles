@@ -2,24 +2,18 @@
 #
 # environment variables and standard paths.
 
-if command -v "nvim" /dev/null 2>&1; then
-	export EDITOR='nvim'
-
-else
-  export EDITOR='vim'
-fi
-
+export EDITOR='vim'
 export VISUAL="$EDITOR"
 export PYTHONIOENCODING='UTF-8'
-export MANPAGER='less -X'
+export MANPAGER='less -R --use-color -Dd+r -Du+b'
 export BASH_SILENCE_DEPRECATION_WARNING=1
 
 # standard paths.
 export PATH="$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH"
 
 # update FPATH to include completions
-if command -v "eza" /dev/null 2>&1; then
-	export FPATH="$HOME/.eza/completions/zsh:$FPATH"
+if [ -d "$HOME/.zsh/completions" ]; then
+	export FPATH="$HOME/.zsh/completions:$FPATH"
 fi
 
 # set windows home directory on WSL
@@ -31,15 +25,11 @@ fi
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 # export LESS_TERMCAP_md="${yellow}"
 
-# starship prompt
-if command -v "starship" /dev/null 2>&1; then
-	export STARSHIP_CONFIG="$HOME/.config/starship/config.toml"
-fi
-
 # don't put duplicate lines or lines starting with space in the history.
 export HISTCONTROL=ignoreboth:erasedups
 
 # increase history persistence and sync across sessions
-export HISTSIZE=32768
+export HISTSIZE=5000
 export HISTFILESIZE=$HISTSIZE
-export HISTFILE="$HOME/.history"
+export HISTFILE="$HOME/.config/shell/history"
+export HISTDUP=erase

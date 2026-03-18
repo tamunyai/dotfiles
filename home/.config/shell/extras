@@ -5,8 +5,8 @@
 shell="bash"
 [ -n "$ZSH_VERSION" ] && shell="zsh"
 
-# mise (universal language manager)
-if command -v "mise" /dev/null 2>&1; then
+# mise (universal language management)
+if command -v "mise" >/dev/null 2>&1; then
   eval "$(mise activate $shell)"
 fi
 
@@ -23,18 +23,45 @@ if command -v "fzf" >/dev/null 2>&1; then
 fi
 
 # starship prompt
-if command -v "starship" /dev/null 2>&1; then
+if command -v "starship" >/dev/null 2>&1; then
+  export STARSHIP_CONFIG="$HOME/.config/starship/config.toml"
+
   eval "$(starship init $shell)"
 fi
 
 # zoxide (smart `cd` replacement) for faster navigation
-if command -v "zoxide" /dev/null 2>&1; then
+if command -v "zoxide" >/dev/null 2>&1; then
   eval "$(zoxide init --cmd cd $shell)"
 fi
 
-# bat
+# modern replacement for ls
+if command -v "eza" >/dev/null 2>&1; then
+	alias ls="eza --color=auto --group-directories-first --icons"
+
+	alias l="eza -alh --color=auto --group-directories-first --icons"
+	alias ll='eza -alh --color=auto --group-directories-first --icons'
+	alias la='eza -a --color=auto --group-directories-first --icons'
+	alias tree="eza -a --tree -I '.git|.svn|.hg|.DS_Store|Thumbs.db' -L 1 --group-directories-first --icons"
+
+else
+  alias ls='ls --color=auto --group-directories-first'
+
+  alias l='ls -alh --color=auto --group-directories-first'
+  alias ll='ls -alh --color=auto --group-directories-first'
+  alias la='ls -a --color=auto --group-directories-first'
+  alias tree="ls -R --color=always --group-directories-first | grep -Ev '.git|.svn|.hg|.DS_Store|Thumbs.db' --color=always"
+fi
+
+if command -v "dircolors" >/dev/null 2>&1; then
+	test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+fi
+
+# alert alias for long running commands
+if command -v "notify-send" >/dev/null 2>&1; then
+	alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history | tail -n1 | sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+fi
+
 if command -v "bat" >/dev/null 2>&1; then
 	alias cat='bat'
-
   export MANPAGER="bat -plman"
 fi

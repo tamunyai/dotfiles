@@ -19,6 +19,24 @@ platform=$(detect_platform)
 info "Detected platform: $platform"
 
 if [ "$platform" != "Git Bash" ]; then
+  # update package manager once
+  info "Updating package manager..."
+  if command -v "apt-get" >/dev/null 2>&1; then
+    sudo apt-get update -y
+
+  elif command -v "dnf" >/dev/null 2>&1; then
+    sudo dnf makecache -y
+
+  # elif command -v "yum" >/dev/null 2>&1; then
+  # 	sudo yum makecache -y
+
+  # elif command -v "pacman" >/dev/null 2>&1; then
+  # 	sudo pacman -Sy --noconfirm
+
+  # elif command -v "zypper" >/dev/null 2>&1; then
+  # 	sudo zypper refresh
+  fi
+
   # array of packages to install
   packages=("zsh" "curl" "git" "gcc" "g++")
 
@@ -33,7 +51,7 @@ if [ "$platform" != "Git Bash" ]; then
   fi
 
   # install `mise` for universal language management
-  if ! command -v "mise" /dev/null 2>&1; then
+  if ! command -v "mise" >/dev/null 2>&1; then
     mise_url="https://mise.run"
 
     info "Installing mise (universal language manager)..."
@@ -49,7 +67,7 @@ else
   mkdir -p "$LOCAL_BIN" || fail "Failed to create $LOCAL_BIN"
 
   # install `zoxide`, a smarter `cd` command
-  if ! command -v "zoxide" /dev/null 2>&1; then
+  if ! command -v "zoxide" >/dev/null 2>&1; then
     zoxide_url="https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh"
 
     info "Installing zoxide (smarter cd command)..."
@@ -58,7 +76,7 @@ else
   fi
 
   # install `starship` prompt
-  if ! command -v "starship" /dev/null 2>&1; then
+  if ! command -v "starship" >/dev/null 2>&1; then
     starship_url="https://starship.rs/install.sh"
 
     info "Installing Starship prompt..."
@@ -97,5 +115,5 @@ find "$SOURCE_DIR" -type f | while read -r src_path; do
 done
 
 # final success message
-success "Setup complete!"
+success "Setup complete! Please restart your terminal to apply changes."
 echo ''

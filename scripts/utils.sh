@@ -50,7 +50,7 @@ function install() {
   local package=$1
   local platform=$2
 
-  if command -v "$package" /dev/null 2>&1; then
+  if command -v "$package" >/dev/null 2>&1; then
     success "$package already installed."
     return 0
   fi
@@ -59,24 +59,19 @@ function install() {
 
   case "$platform" in
     Linux)
-      if command -v "apt-get" /dev/null 2>&1; then
-        sudo apt-get update -y
+      if command -v "apt-get" >/dev/null 2>&1; then
         sudo apt-get install -y "$package"
 
-      # elif command -v "dnf" /dev/null 2>&1; then
-      # 	sudo dnf makecache -y
-      # 	sudo dnf install -y "$package"
+      elif command -v "dnf" >/dev/null 2>&1; then
+      	sudo dnf install -y "$package"
 
-      # elif command -v "yum" /dev/null 2>&1; then
-      # 	sudo yum makecache -y
+      # elif command -v "yum" >/dev/null 2>&1; then
       # 	sudo yum install -y "$package"
 
-      # elif command -v "pacman" /dev/null 2>&1; then
-      # 	sudo pacman -Sy --noconfirm
+      # elif command -v "pacman" >/dev/null 2>&1; then
       # 	sudo pacman -S --noconfirm "$package"
 
-      # elif command -v "zypper" /dev/null 2>&1; then
-      # 	sudo zypper refresh
+      # elif command -v "zypper" >/dev/null 2>&1; then
       # 	sudo zypper install -y "$package"
 
       else
@@ -85,7 +80,7 @@ function install() {
       ;;
 
     macOS)
-      if command -v "brew" /dev/null 2>&1; then
+      if command -v "brew" >/dev/null 2>&1; then
         brew install "$package"
 
       else

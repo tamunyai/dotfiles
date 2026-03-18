@@ -2,44 +2,10 @@
 #
 # shell aliases.
 
-# enable color support of ls and also add handy aliases
-if command -v "dircolors" /dev/null 2>&1; then
-	test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-	alias ls='ls --color=auto --group-directories-first'
-	alias sl='ls --color=auto --group-directories-first'
-	# alias dir='dir --color=auto'
-	# alias vdir='vdir --color=auto'
-
-	alias grep='grep --color=auto'
-	alias fgrep='fgrep --color=auto'
-	alias egrep='egrep --color=auto'
-fi
-
-# common ignore pattern for all tree views
-IGNORE_PATTERN='node_modules|.git|.expo|venv|__pycache__|.DS_Store|.next|.turbo|.idea|.vscode|dist|build|.parcel-cache|.cache|.pytest_cache|.mypy_cache|coverage'
-
-# some more ls aliases
-if command -v "eza" /dev/null 2>&1; then
-	alias ls="eza --color=auto --group-directories-first --icons"
-	alias sl="eza --color=auto --group-directories-first --icons"
-
-	alias l="eza -alh --color=auto --group-directories-first --icons"
-	alias ll='eza -alh --color=auto --group-directories-first --icons'
-	alias la='eza -a --color=auto --group-directories-first --icons'
-	alias tree="eza -a --tree -I '${IGNORE_PATTERN}' -L 1 --group-directories-first --icons"
-
-else
-	alias l='ls -alh --color=auto --group-directories-first'
-	alias ll='ls -alh --color=auto --group-directories-first'
-	alias la='ls -a --color=auto --group-directories-first'
-	alias tree="ls -R --color=always --group-directories-first | grep -Ev '${IGNORE_PATTERN}' --color=always"
-fi
-
-# add an "alert" alias for long running commands.  Use like so:
-#   sleep 10; alert
-if command -v "notify-send" /dev/null 2>&1; then
-	alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history | tail -n1 | sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
-fi
+# enable color support
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
 
 # easier navigation
 alias ..='cd ..'

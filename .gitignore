@@ -1,9 +1,6 @@
 # local configuration (not committed)
 home/.config/shell/localrc
 
-# shell plugins (installed at runtime by .zshrc)
-.config/shell/plugins/
-
 # OS-specific files
 .DS_Store
 Thumbs.db
