@@ -102,30 +102,49 @@ find "$SOURCE_DIR" -type f -name "*.example" | while read -r example_path; do
   fi
 done
 
+# ensure all files in SOURCE_DIR have Unix line endings
+find "$SOURCE_DIR" -type f | while read -r src_path; do
+  fix_crlf_if_needed "$src_path"
+done
+
 info "Linking all dotfiles from $DOTFILES_DIR to $HOME..."
 
-# recursively find all files in DOTFILES_DIR/home
+# identify the package name (the directory in DOTFILES_DIR containing dotfiles)
+PACKAGE_NAME="home"
+
+# backup existing non-symlink files to ensure stow doesn't conflict
+# this preserves the rollback-friendly behavior for new systems
 find "$SOURCE_DIR" -type f | while read -r src_path; do
-  # fix CRLF if needed
-  fix_crlf_if_needed "$src_path"
-
-  # compute the relative path from DOTFILES_DIR
   rel_path="${src_path#$SOURCE_DIR/}"
-
-  # ensure the destination directory exists
   dest_path="$HOME/$rel_path"
-  mkdir -p "$(dirname "$dest_path")"
 
-  # backup existing non-symlink files
   if [[ -e "$dest_path" && ! -L "$dest_path" ]]; then
     info "'$dest_path' exists (not a symlink), backing up."
     mv "$dest_path" "$dest_path.bak.$(date +%s)" || fail "Failed to backup $dest_path"
   fi
-
-  # create symlink
-  ln -sf "$src_path" "$dest_path"
-  success "Linked '$dest_path' -> '$src_path'"
 done
+
+# use stow on compatible platforms (Linux/macOS)
+if [ "$platform" != "Git Bash" ] && command -v stow >/dev/null 2>&1; then
+  info "Using stow to link dotfiles..."
+  # stow links all files from PACKAGE_NAME/ into the target directory ($HOME)
+  # -t: target directory, -d: source directory containing packages
+  stow --target="$HOME" --dir="$DOTFILES_DIR" "$PACKAGE_NAME" || fail "Stow failed to link dotfiles."
+  success "Linked dotfiles with stow."
+
+else
+  # fallback for Git Bash where stow might not be available or symlinks are problematic.
+  info "Git Bash detected or stow not found, falling back to manual linking..."
+
+  find "$SOURCE_DIR" -type f | while read -r src_path; do
+    rel_path="${src_path#$SOURCE_DIR/}"
+    dest_path="$HOME/$rel_path"
+
+    mkdir -p "$(dirname "$dest_path")"
+    ln -sf "$src_path" "$dest_path"
+    success "Linked '$dest_path' -> '$src_path'"
+  done
+fi
 
 # final success message
 success "Setup complete! Please restart your terminal to apply changes."
