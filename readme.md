@@ -52,8 +52,6 @@ Do not edit tracked config files for machine-specific settings. Instead, create 
 
 This file is sourced last by both Bash and Zsh. Use it for secrets, machine-specific env vars, personal aliases, and local overrides. It is **not committed to this repository**.
 
-On a fresh clone, the `./scripts/bootstrap.sh` script will automatically create a local `localrc` from the `localrc.example` template if it doesn't already exist.
-
 ## License
 
 This repository is licensed under the [MIT License](license)

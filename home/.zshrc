@@ -66,29 +66,39 @@ bindkey '^n' history-search-forward  # bind Ctrl+N for forward search through hi
 
 # --- EXTRAS ------------------------------------------------------------------
 
-# eza + fzf-tab integration
-if command -v "eza" >/dev/null 2>&1; then
-  zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza --tree -L 1 --group-directories-first --icons "$realpath"'
-  zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'eza --tree -L 1 --group-directories-first --icons "$realpath"'
-
-else
-  zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color=always "$realpath"'
-  zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color=always "$realpath"'
-fi
-
 # bat colorize --help and -h output for all commands.
 if command -v "bat" >/dev/null 2>&1; then
   alias -g -- -h='-h 2>&1 | bat --style=plain --language=help'
   alias -g -- --help='--help 2>&1 | bat --style=plain --language=help'
+fi
 
-  # if eza is also available, use it as fallback for directories in the general preview
-  if command -v "eza" >/dev/null 2>&1; then
-    zstyle ':fzf-tab:complete:*' fzf-preview '[[ -f $realpath ]] && bat --color=always --style=numbers --line-range=:500 $realpath || eza --tree -L 1 --group-directories-first --icons "$realpath"'
+# fzf-tab preview
+zstyle ':fzf-tab:complete:*' fzf-preview '
+  # skip if realpath is empty or does not exist
+  if [[ -z "$realpath" || ! -e "$realpath" ]]; then
+    echo "No preview available"
+    return
+  fi
+
+  if [[ -f $realpath ]]; then
+    # file preview
+    if command -v bat >/dev/null 2>&1; then
+      bat --color=always --style=numbers --line-range=:500 "$realpath"
+
+    else
+      head -n 200 "$realpath"
+    fi
 
   else
-    zstyle ':fzf-tab:complete:*' fzf-preview '[[ -f $realpath ]] && bat --color=always --style=numbers --line-range=:500 $realpath'
+    # directory preview
+    if command -v eza >/dev/null 2>&1; then
+      eza --tree -L 1 --group-directories-first --icons "$realpath"
+
+    else
+      ls --color=always "$realpath"
+    fi
   fi
-fi
+'
 
 # --- LOCAL OVERRIDES ---------------------------------------------------------
 

@@ -38,7 +38,7 @@ if [ "$platform" != "Git Bash" ]; then
   fi
 
   # array of packages to install
-  packages=("zsh" "curl" "git" "gcc" "g++")
+  packages=("zsh" "curl" "git" "gcc" "g++" "stow")
 
   # install packages in the array
   for package in "${packages[@]}"; do

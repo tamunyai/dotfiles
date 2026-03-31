@@ -117,7 +117,7 @@ done
 
 case "$platform" in
   Linux)
-    if [[ -n "$WSL_DISTRO_NAME" ]]; then
+    if [[ -n "$WSL_DISTRO_NAME:-" ]]; then
       # if running in WSL
       user "WSL detected: fonts need to be installed in Windows."
       info "Fonts have been saved to: $DEST_FONTS_DIR/"

@@ -114,7 +114,6 @@ format = """
 
   symbol = '🌱 '
   format = 'on [$symbol$branch]($style)'
-  truncation_length = 4
   truncation_symbol = ''
   style = 'green'
 
