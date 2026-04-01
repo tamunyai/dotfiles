@@ -1,0 +1,4 @@
+\.git
+^scripts$
+^readme\.md$
+^license$
