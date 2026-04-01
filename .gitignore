@@ -1,5 +1,6 @@
 # local configuration (not committed)
 shell/.config/shell/localrc
+ghostty/.config/ghostty/local
 
 # OS-specific files
 .DS_Store

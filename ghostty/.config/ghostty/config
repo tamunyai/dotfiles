@@ -1,0 +1,23 @@
+# Ghostty Terminal Configuration
+
+theme = GitHub Dark Default
+font-family = JetBrainsMono Nerd Font
+font-size = 12
+
+cursor-style-blink = false
+cursor-style = block
+cursor-blink = false
+
+window-padding-x = 2
+window-padding-y = 2
+window-save-state = always
+window-padding-balance = true
+confirm-close-surface = true
+confirm-continue-close = true
+
+shell-integration-features = true
+copy-on-select = clipboard
+mouse-hide-while-typing = true
+
+# local overrides
+config-file = ?local

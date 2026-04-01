@@ -1,0 +1,6 @@
+# Ghostty Local Overrides
+#
+# this file is git ignored – use it for machine-specific settings.
+
+# theme = GitHub Light Default
+font-family = ComicShannsMono Nerd Font
