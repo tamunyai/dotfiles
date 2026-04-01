@@ -1,5 +1,5 @@
 # local configuration (not committed)
-home/.config/shell/localrc
+shell/.config/shell/localrc
 
 # OS-specific files
 .DS_Store
@@ -27,6 +27,7 @@ desktop.ini
 
 # shell history & credentials
 .history
+shell/.config/shell/history
 .bash_history
 .zsh_history
 .zsh_sessions/
