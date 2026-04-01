@@ -47,12 +47,12 @@ for package in "${packages[@]}"; do
   PACKAGE_SOURCE="$DOTFILES_DIR/$package"
 
   # ensure Unix line endings
-  find "$PACKAGE_SOURCE" -type f | while read -r src_path; do
+  find "$PACKAGE_SOURCE" -type f -not -name "*.example" | while read -r src_path; do
     fix_crlf_if_needed "$src_path"
   done
 
   # backup existing non-symlink files
-  find "$PACKAGE_SOURCE" -type f | while read -r src_path; do
+  find "$PACKAGE_SOURCE" -type f -not -name "*.example" | while read -r src_path; do
     rel_path="${src_path#$PACKAGE_SOURCE/}"
     dest_path="$HOME/$rel_path"
 
@@ -71,7 +71,7 @@ for package in "${packages[@]}"; do
   else
     # fallback for Git Bash or systems without stow
     info "Falling back to manual linking for: $package"
-    find "$PACKAGE_SOURCE" -type f | while read -r src_path; do
+    find "$PACKAGE_SOURCE" -type f -not -name "*.example" | while read -r src_path; do
       rel_path="${src_path#$PACKAGE_SOURCE/}"
       dest_path="$HOME/$rel_path"
       
