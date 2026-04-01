@@ -13,12 +13,21 @@ This repository contains my dotfiles for a consistent development setup across v
 2. **Run the bootstrap script**
 
    ```bash
-   cd ~/.dotfiles/scripts && ./bootstrap.sh
+   cd ~/.dotfiles && ./bootstrap.sh
    ```
 
-   Installs base dependencies and [`mise`](https://mise.jdx.dev) (for tool management), then symlinks everything in `home/` to `$HOME`, backing up any conflicts as `.bak.<timestamp>`.
+   This is the recommended entrypoint for a full machine setup. It orchestrates dependency installation, example configuration materialization, and dotfile deployment using GNU Stow (with a manual fallback for Git Bash).
 
-3. **Install Tools via Mise** (Linux/macOS)
+3. **Entrypoints**
+
+   The repository provides three main entrypoints at the root:
+   - `./bootstrap.sh`: Full first-time setup (Install + Deploy).
+   - `./install.sh`: Installs core dependencies and tools (`git`, `stow`, `mise`, etc.) without linking dotfiles.
+   - `./doctor.sh`: Runs diagnostics to verify your setup, tool existence, and stow package health.
+
+   Internal implementation details and helper scripts are located in the `scripts/` directory.
+
+4. **Install Tools via Mise** (Linux/macOS)
 
    ```bash
    mise install
