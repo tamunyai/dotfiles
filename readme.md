@@ -53,13 +53,12 @@ This repository contains my dotfiles for a consistent development setup across v
 
 ## Customization
 
-Do not edit tracked config files for machine-specific settings. Instead, create or edit:
+Do not edit tracked config files for machine-specific settings. Instead, use the optional local override files which are not tracked by git:
 
-```bash
-~/.config/shell/localrc
-```
+- Shell: `~/.config/shell/localrc`
+- Ghostty: `~/.config/ghostty/local`
 
-This file is sourced last by both Bash and Zsh. Use it for secrets, machine-specific env vars, personal aliases, and local overrides. It is **not committed to this repository**.
+These files are sourced last (or included) and can be used for secrets, machine-specific settings, or personal preferences.
 
 ## License
 
