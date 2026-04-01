@@ -1,0 +1,17 @@
+# ~/.config/shell/localrc
+#
+# machine-specific or personal overrides
+# this file is sourced *after* the shared configurations and is not tracked by git.
+
+# --- EXPORTS -----------------------------------------------------------------
+
+# standard paths.
+# export PATH="$HOME/dev/scripts:$PATH"
+
+# --- ALIASES -----------------------------------------------------------------
+
+# alias gs='git status -sb'
+# alias serve='python3 -m http.server 8000'
+
+alias vi='nvim'
+alias vim='nvim'
