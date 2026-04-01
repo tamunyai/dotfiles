@@ -35,7 +35,7 @@ This repository contains my dotfiles for a consistent development setup across v
 
    Installs all runtimes and CLI tools pinned in `.config/mise/config.toml`.
 
-4. **Install Fonts (Optional)**
+5. **Install Fonts (Optional)**
 
    ```bash
    cd ~/.dotfiles/scripts && ./install-fonts.sh
@@ -43,7 +43,7 @@ This repository contains my dotfiles for a consistent development setup across v
 
    Downloads and installs Nerd Fonts (JetBrains Mono by default) into the correct directory for your OS.
 
-5. **Set up SSH for GitHub (Optional)**
+6. **Set up SSH for GitHub (Optional)**
 
    ```bash
    cd ~/.dotfiles/scripts && ./setup-git-ssh.sh
@@ -51,14 +51,20 @@ This repository contains my dotfiles for a consistent development setup across v
 
    Generates an `ed25519` SSH key if one doesn't exist and prints the public key to add to GitHub.
 
-## Customization
+## Package Overview
 
-Do not edit tracked config files for machine-specific settings. Instead, use the optional local override files which are not tracked by git:
+This repository manages configurations for the following tools:
 
-- Shell: `~/.config/shell/localrc`
-- Ghostty: `~/.config/ghostty/local`
+- **Terminal**: `ghostty`
+- **Shell**: `bash`, `zsh`
+- **Editors**: `nvim`, `vim`
+- **Utilities**: `git`, `starship`, `mise`, `curl`
 
-These files are sourced last (or included) and can be used for secrets, machine-specific settings, or personal preferences.
+## Package Documentation
+
+This repository uses a decentralized documentation convention. Each package may include a `notes.md` file for post-install setup, machine-local override instructions, and platform-specific tweaks (e.g., GNOME terminal settings).
+
+Please refer to the `notes.md` within individual package directories for detailed operational instructions.
 
 ## License
 
