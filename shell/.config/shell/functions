@@ -37,12 +37,12 @@ function va() {
 	fi
 
 	for dir in "${dirs[@]}"; do
-    for path in "./$dir/bin/activate" "./$dir/Scripts/activate"; do
-      if [ -f "$path" ]; then
-        source "$path"
-        return 0
-      fi
-    done
+		for venv_path in "./$dir/bin/activate" "./$dir/Scripts/activate"; do
+			if [ -f "$venv_path" ]; then
+				source "$venv_path"
+				return 0
+			fi
+		done
 	done
 
 	echo "va: no virtual environment found. run 've' first."
