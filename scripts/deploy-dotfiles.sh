@@ -18,9 +18,9 @@ platform=$(detect_platform)
 info "Handling example configuration files..."
 
 # find all .example files across all root-level packages
-find "$DOTFILES_DIR" -maxdepth 2 -type f -name "*.example" -not -path "*/.*" -not -path "$DOTFILES_DIR/scripts/*" | while read -r example_path; do
+find "$DOTFILES_DIR" -type f -name "*.example" -not -path "$DOTFILES_DIR/scripts/*" | while read -r example_path; do
   target_path="${example_path%.example}"
-  
+
   if [ ! -f "$target_path" ]; then
     info "Creating '$(basename "$target_path")' from example..."
     cp "$example_path" "$target_path"
@@ -74,7 +74,7 @@ for package in "${packages[@]}"; do
     find "$PACKAGE_SOURCE" -type f -not -name "*.example" | while read -r src_path; do
       rel_path="${src_path#$PACKAGE_SOURCE/}"
       dest_path="$HOME/$rel_path"
-      
+
       mkdir -p "$(dirname "$dest_path")"
       ln -sf "$src_path" "$dest_path"
       success "Linked '$dest_path' -> '$src_path'"
