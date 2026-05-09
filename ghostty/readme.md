@@ -1,4 +1,4 @@
-# Ghostty Notes
+# Ghostty
 
 ## GNOME Default Terminal
 

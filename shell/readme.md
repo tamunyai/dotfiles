@@ -1,4 +1,4 @@
-# Shell Notes
+# Shell
 
 ## Machine-Local Overrides
 
