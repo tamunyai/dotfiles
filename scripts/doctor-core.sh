@@ -25,7 +25,7 @@ fi
 for tool in "${tools[@]}"; do
   if ! command -v "$tool" >/dev/null 2>&1; then
     user "Required tool '$tool' is MISSING."
-    
+
   else
     success "Tool '$tool' found."
   fi
@@ -65,7 +65,7 @@ if [ "$platform" != "Git Bash" ] && command -v stow >/dev/null 2>&1; then
   for package in "${packages[@]}"; do
     if stow --target="$HOME" --dir="$DOTFILES_DIR" -n "$package" >/dev/null 2>&1; then
       success "Package '$package' is ready to stow (clean dry-run)."
-  
+
     else
       user "Package '$package' has potential stow conflicts (dry-run failed)."
     fi

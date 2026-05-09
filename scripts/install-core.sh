@@ -19,10 +19,10 @@ info "Detected platform: $platform"
 if [ "$platform" != "Git Bash" ]; then
   # update package manager once
   info "Updating package manager..."
-  
+
   if command -v "apt-get" >/dev/null 2>&1; then
     sudo apt-get update -y
-  
+
   elif command -v "dnf" >/dev/null 2>&1; then
     sudo dnf makecache -y
 
@@ -75,7 +75,7 @@ else
   # install `starship` prompt
   if ! command -v "starship" >/dev/null 2>&1; then
     starship_url="https://starship.rs/install.sh"
-    
+
     info "Installing Starship prompt..."
     curl -fsSL "$starship_url" | sh -s -- -y --bin-dir "$LOCAL_BIN" || fail "Starship installation failed."
     success "Starship installed successfully."
