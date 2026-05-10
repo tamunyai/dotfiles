@@ -2,7 +2,7 @@
 #
 # environment variables and standard paths.
 
-export EDITOR='vim'
+export EDITOR='nvim'
 export VISUAL="$EDITOR"
 export PYTHONIOENCODING='UTF-8'
 export MANPAGER='less -R --use-color -Dd+r -Du+b'
