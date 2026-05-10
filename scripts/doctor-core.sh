@@ -47,7 +47,10 @@ if [ ${#packages[@]} -eq 0 ]; then
   fail "No stow packages discovered in $DOTFILES_DIR."
 
 else
-  success "Discovered ${#packages[@]} packages: ${packages[*]}"
+  echo ''
+  success "Discovered ${#packages[@]} packages:"
+  printf '\r    - %s\n' "${packages[@]}"
+  echo ''
 fi
 
 # check for scripts/ being treated as a package (should not happen)
@@ -58,7 +61,7 @@ else
   success "Utility folders ('scripts/') correctly excluded from packages."
 fi
 
-# optional: dry-run stow check
+# dry-run stow check
 if [ "$platform" != "Git Bash" ] && command -v stow >/dev/null 2>&1; then
   info "Performing dry-run stow check for each package..."
 

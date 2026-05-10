@@ -40,7 +40,10 @@ while IFS= read -r dir; do
   packages+=("$pkg")
 done < <(find "$DOTFILES_DIR" -maxdepth 1 -type d -not -path "$DOTFILES_DIR")
 
-info "Deploying ${#packages[@]} packages: ${packages[*]}"
+echo ''
+info "Deploying ${#packages[@]} packages:"
+printf '\r    - %s\n' "${packages[@]}"
+echo ''
 
 for package in "${packages[@]}"; do
   info "Processing package: $package"
