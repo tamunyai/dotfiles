@@ -38,10 +38,10 @@ This repository contains my dotfiles for a consistent development setup across v
 5. **Install Fonts (Optional)**
 
    ```bash
-   cd ~/.dotfiles/scripts && ./install-fonts.sh
+   cd ~/.dotfiles/scripts && ./install-fonts.sh [FONT...]
    ```
 
-   Downloads and installs Nerd Fonts (JetBrains Mono by default) into the correct directory for your OS.
+   Downloads and installs Nerd Fonts (JetBrains Mono by default) into the correct directory for your OS, or installs specific fonts passed as arguments.
 
 6. **Set up SSH for GitHub (Optional)**
 

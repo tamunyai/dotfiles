@@ -12,8 +12,10 @@ source "${SCRIPT_DIR}/utils.sh"
 
 # --- INSTALLATION & CONFIGURATION --------------------------------------------
 
-# uncomment the fonts you want to install
-declare -a fonts=(
+VERSION='3.4.0'
+
+# default fonts (used when no args are passed)
+declare -a DEFAULT_FONTS=(
   # "Agave"
   # "AnonymousPro"
   # "Arimo"
@@ -65,6 +67,14 @@ declare -a fonts=(
   # "VictorMono"
 )
 
+# use CLI args if provided, otherwise fallback to defaults
+if [[ $# -gt 0 ]]; then
+  fonts=("$@")
+
+else
+  fonts=("${DEFAULT_FONTS[@]}")
+fi
+
 # detect operating system
 platform=$(detect_platform)
 info "Detected platform: $platform"
@@ -90,7 +100,7 @@ else
 fi
 
 # array of packages to install
-packages=("unzip")
+packages=("curl" "unzip")
 
 # install packages in the array
 for package in "${packages[@]}"; do
@@ -99,8 +109,15 @@ done
 
 # download and install selected Nerd Font(s)
 for font in "${fonts[@]}"; do
-  version='3.4.0'
-  url="https://github.com/ryanoasis/nerd-fonts/releases/download/v${version}/${font}.zip"
+  url="https://github.com/ryanoasis/nerd-fonts/releases/download/v${VERSION}/${font}.zip"
+
+  info "Checking availability for ${font}..."
+
+  # validate font exists upstream
+  if ! curl --head --silent --fail "$url" >/dev/null; then
+    invalid_fonts+=("$font")
+    continue
+  fi
 
   info "downloading ${font} font..."
 
@@ -114,6 +131,17 @@ for font in "${fonts[@]}"; do
     fail "failed to download $font font. Please check your internet connection or try again later."
   fi
 done
+
+if [[ ${#invalid_fonts[@]} -gt 0 ]]; then
+  error_message=$(
+    {
+      echo "The following font(s) do not exist in Nerd Fonts v${VERSION}:"
+      printf '\r    - %s\n' "${invalid_fonts[@]}"
+    }
+  )
+
+  fail "$error_message"
+fi
 
 case "$platform" in
   Linux)
